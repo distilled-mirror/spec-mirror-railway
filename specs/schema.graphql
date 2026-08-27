@@ -90,7 +90,6 @@ enum ActiveFeatureFlag {
   CLOUD_AGENT_CHAT
   DEBUG_SMART_DIAGNOSIS
   HA_FOR_ALL_TEMPLATES
-  HA_FOR_MYSQL
   IN_DASHBOARD_SUPPORT
   MAGIC_CONFIG
   MYSQL_PITR
@@ -2049,7 +2048,7 @@ type Mutation {
   bucketUpdate(id: String!, input: BucketUpdateInput!): Bucket!
 
   """
-  Terminates a running HA PITR enable/disable workflow and clears the progress snapshot so the UI re-evaluates from the live cluster state. No-ops if no workflow is running.
+  Cancels an in-progress PITR enable/disable rollout on a Postgres HA cluster and resets its progress so the UI re-reads from the live cluster. No-ops when nothing is running.
   """
   cancelPitrHaWorkflow(environmentId: String!, rootServiceId: String!): Boolean!
 
@@ -2059,7 +2058,7 @@ type Mutation {
   canvasViewMerge(sourceEnvironmentId: String!, targetEnvironmentId: String!): Boolean!
 
   """
-  Clears a completed HA PITR workflow progress snapshot so the Backups page can start fresh. In-flight workflows cannot be cleared.
+  Clears the recorded progress of a finished PITR enable/disable rollout so the Backups page starts fresh. A rollout still in progress cannot be cleared.
   """
   clearPitrHaWorkflowProgress(environmentId: String!, rootServiceId: String!): Boolean!
 
@@ -2143,7 +2142,7 @@ type Mutation {
   deploymentTriggerUpdate(id: String!, input: DeploymentTriggerUpdateInput!): DeploymentTrigger!
 
   """
-  Disables PITR on a Postgres-HA cluster via the same rolling workflow as enable: PATCHes Patroni DCS archive_mode=off, restarts replicas one at a time, switches over, restarts the former leader, then strips the WAL_ARCHIVE_* vars. The bucket is left intact so backup history isn't destroyed.
+  Disables point-in-time recovery on a Postgres HA cluster with the same rolling rollout as enable. The backup bucket is left intact, so existing backup history is preserved.
   """
   disablePitrForHaCluster(input: DisablePitrForHaClusterInput!): TemplateDeployPayload!
 
@@ -2183,7 +2182,7 @@ type Mutation {
   emailChangeInitiate(newEmail: String!): Boolean!
 
   """
-  Enables PITR on a Postgres-HA cluster via a rolling workflow: creates the bucket, writes WAL_ARCHIVE_* vars on every member, ensures Patroni DCS archive_mode=on, restarts replicas one at a time, switches over, then restarts the former leader.
+  Enables point-in-time recovery on a Postgres HA cluster with a rolling, near-zero-downtime rollout across its members. Safe to retry.
   """
   enablePitrForHaCluster(input: EnablePitrForHaClusterInput!): TemplateDeployPayload!
 
@@ -2848,7 +2847,7 @@ type Mutation {
   ): Boolean!
 
   """
-  Point-in-time restore. Creates a brand-new database service in the project. The image populates the new service's volume from the source bucket on first boot (e.g. `pgbackrest restore --type=time` for Postgres, full-backup restore plus binlog replay for MySQL) and recovers to the target. Source service stays online and untouched.
+  Point-in-time restore. Creates a brand-new database service in the project, recovered to the target timestamp from the source service's backup history. The source service stays online and untouched.
   """
   volumeInstancePITRRestore(
     """
@@ -2857,7 +2856,7 @@ type Mutation {
     newServiceName: String
 
     """
-    Caller-supplied source archive sub-prefix (e.g. `/pgbackrest/cluster-<sysid>`), as an absolute bucket path (leading slash, `[A-Za-z0-9._-]` segments) at or under the source service's archive root (`WAL_ARCHIVE_PATH`). Provided by the multi-history picker when the user selects a specific cluster lifetime out of multiple sub-prefixes in the source bucket. Scopes both the pre-flight restore-window validation and the restored fork's archive source, treating the selected history's archive as frozen (no allowance for in-flight archiving). Pass null to restore the live source's current cluster.
+    Opaque identifier for one archive history, from the multi-history picker when the source bucket holds more than one. It scopes both the restore-window pre-check and the restored fork's archive source, treating the selected history as frozen. Pass null to restore the source's current history.
     """
     sourceRepoPath: String
 
@@ -3266,7 +3265,7 @@ type PaymentMethodCard {
 }
 
 """
-Live replication health of an HA postgres cluster, probed from patroni on demand. Used to gate the Enable/Disable PITR buttons on the same 'caught up' definition the rolling workflow enforces.
+Live replication health of a Postgres HA cluster's members. Used to gate the Enable/Disable PITR buttons on the same 'caught up' definition the rollout enforces.
 """
 type PitrHaClusterReplicationHealth {
   allHealthy: Boolean!
@@ -3321,7 +3320,7 @@ enum PitrHaWorkflowPhase {
 }
 
 """
-Progress snapshot for an in-flight (or recently completed) HA PITR enable/disable workflow. Persisted in Redis for ~1h and re-emitted on every phase transition over the pitrHaWorkflowProgress subscription.
+Progress of an in-flight or recently completed PITR enable/disable rollout on a Postgres HA cluster.
 """
 type PitrHaWorkflowProgress {
   clusterMutated: Boolean!
@@ -4414,12 +4413,12 @@ type Query {
   passkeys(after: String, before: String, first: Int, last: Int): QueryPasskeysConnection!
 
   """
-  Live replication health for an HA postgres cluster, probed from patroni. Use to gate the Enable/Disable PITR buttons so the user can't start a rollout while a replica is too far behind to rejoin. Returns null when the service isn't an HA root.
+  Live replication health for a Postgres HA cluster. Use it to gate the Enable/Disable PITR buttons so a rollout can't start while a replica is too far behind to rejoin. Returns null when the service isn't an HA root.
   """
   pitrHaClusterReplicationHealth(environmentId: String!, rootServiceId: String!): PitrHaClusterReplicationHealth
 
   """
-  One-shot read of the persisted progress for an HA PITR enable/disable workflow. Use to rehydrate state on page load before connecting to the subscription. Returns null if no workflow has run recently (TTL ~1h).
+  One-shot read of the current progress of a PITR enable/disable rollout on a Postgres HA cluster. Use it to rehydrate state on page load, then poll this field for updates. Returns null when no rollout has run recently.
   """
   pitrHaWorkflowProgress(environmentId: String!, rootServiceId: String!): PitrHaWorkflowProgress
 
@@ -5602,6 +5601,11 @@ type ServiceInstance implements Node {
   drainingSeconds: Int
   edgeConfig: EdgeConfig
   environmentId: String!
+
+  """
+  Whether any deployment was ever created for this service instance, including deployments that have since been removed. Distinguishes a service that was torn down (all deployments removed) from one that has never deployed — latestDeployment and activeDeployments are null/empty for both.
+  """
+  hasEverDeployed: Boolean!
   healthcheckPath: String
   healthcheckTimeout: Int
   id: ID!
@@ -6594,16 +6598,13 @@ type UserProfile {
 type UserProfileResponse {
   avatar: String
   createdAt: DateTime!
-  customerId: String
   id: String!
-  isTrialing: Boolean
   name: String
   profile: UserProfile!
 
   """Gets all public projects for a user."""
   publicProjects(after: String, before: String, first: Int, last: Int): UserProfileResponsePublicProjectsConnection!
   publishedTemplates: [SimilarTemplate!]! @deprecated(reason: "There are no personal templates anymore, they all belong to a workspace")
-  state: String
   totalDeploys: Int!
   username: String
 }
