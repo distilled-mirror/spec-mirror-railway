@@ -97,6 +97,7 @@ enum ActiveFeatureFlag {
   POSTGRES_MAJOR_UPGRADE
   POSTGRES_VULN_AUTO_UPDATE
   PRIORITY_BOARDING
+  PROJECT_FAVORITES
   PROJECT_SANDBOXES
   TEMPLATE_CHAT
   VM_STORAGE_TRACES
@@ -124,11 +125,11 @@ enum ActivePlatformFlag {
   LOGS_LONG_WINDOW_CHUNKING
   NEW_STRIPE_WEBHOOK_VERSION_ROLLOUT
   OAUTH_DCR_KILLSWITCH
+  PRE_DEPLOY_TIMEOUT_KILLSWITCH
+  PROJECT_FAVORITES
   REMOVE_DEPLOYMENT_COMPACT
   SERVICEINSTANCE_DATALOADER_FOR_STATIC_URL
   SPLIT_USAGE_QUERIES
-  STRIPE_AUTOMATIC_TAX
-  STRIPE_AUTOMATIC_TAX_DOMAINS
   STRIPE_METERS_NEW_ACCOUNTS
   STRIPE_METERS_SHADOW_ENABLED
   UPDATED_VM_QUERIES
@@ -1320,6 +1321,26 @@ type Environment implements Node {
 "\nEnvironmentConfig is a custom scalar type that represents the serializedConfig for an environment.\nJSON Schema: https://backboard.railway.com/schema/environment.schema.json\n"
 scalar EnvironmentConfig
 
+input EnvironmentConfigPlanCommentUpsertInput {
+  environmentId: String!
+
+  """
+  GitHub Actions OIDC token (id-token: write) with audience `railway`. Its `repository` claim proves the caller runs in the repo the comment is posted to.
+  """
+  githubOidcToken: String!
+
+  """
+  Structured plan summary: { changes: [{ kind?, summary }], destructive, sourceTree, configEtag, changeSetHash, cliVersion? }. The comment body is composed server-side.
+  """
+  plan: JSON!
+  prNumber: Int!
+}
+
+type EnvironmentConfigPlanCommentUpsertResult {
+  commentId: String!
+  url: String!
+}
+
 input EnvironmentCreateInput {
   """
   If true, the changes will be applied in the background and the mutation will return immediately. If false, the mutation will wait for the changes to be applied before returning.
@@ -2208,6 +2229,11 @@ type Mutation {
     """
     waitForCompletion: Boolean
   ): ChangeSetApplyResult!
+
+  """
+  Posts or updates a `railway config plan` comment on a GitHub pull request under the Railway app identity. The caller proves it runs in the target repo with a GitHub Actions OIDC token; the comment body is composed server-side from the structured plan.
+  """
+  environmentConfigPlanCommentUpsert(input: EnvironmentConfigPlanCommentUpsertInput!): EnvironmentConfigPlanCommentUpsertResult!
 
   """Creates a new environment."""
   environmentCreate(input: EnvironmentCreateInput!): Environment!
@@ -3373,11 +3399,11 @@ enum PlatformFeatureFlag {
   LOGS_LONG_WINDOW_CHUNKING
   NEW_STRIPE_WEBHOOK_VERSION_ROLLOUT
   OAUTH_DCR_KILLSWITCH
+  PRE_DEPLOY_TIMEOUT_KILLSWITCH
+  PROJECT_FAVORITES
   REMOVE_DEPLOYMENT_COMPACT
   SERVICEINSTANCE_DATALOADER_FOR_STATIC_URL
   SPLIT_USAGE_QUERIES
-  STRIPE_AUTOMATIC_TAX
-  STRIPE_AUTOMATIC_TAX_DOMAINS
   STRIPE_METERS_NEW_ACCOUNTS
   STRIPE_METERS_SHADOW_ENABLED
   UPDATED_VM_QUERIES
@@ -5619,6 +5645,7 @@ type ServiceInstance implements Node {
   numReplicas: Int
   overlapSeconds: Int
   preDeployCommand: JSON
+  preDeployTimeoutSeconds: Int
   railpackInfo: RailpackInfo
   railwayConfigFile: String
   region: String
@@ -5685,6 +5712,7 @@ input ServiceInstanceUpdateInput {
   numReplicas: Int
   overlapSeconds: Int
   preDeployCommand: [String!]
+  preDeployTimeoutSeconds: Int
   railwayConfigFile: String
   region: String
   registryCredentials: RegistryCredentialsInput
