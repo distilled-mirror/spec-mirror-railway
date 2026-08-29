@@ -1001,12 +1001,6 @@
             "deprecationReason": null
           },
           {
-            "name": "NEW_PEOPLE_PAGE",
-            "description": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "POSTGRES_MAJOR_UPGRADE",
             "description": null,
             "isDeprecated": false,
