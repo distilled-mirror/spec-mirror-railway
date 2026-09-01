@@ -1228,6 +1228,12 @@
             "deprecationReason": null
           },
           {
+            "name": "VM_COUPON_MIGRATION",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "WORKSPACE_MCP_KILLSWITCH",
             "description": null,
             "isDeprecated": false,
@@ -22882,7 +22888,7 @@
           },
           {
             "name": "serviceInstanceVulnRemediationDismiss",
-            "description": "Dismiss a platform-armed Postgres security update notice and stand down the scheduled redeploy",
+            "description": "Dismiss a platform-armed database security update notice and stand down the scheduled redeploy",
             "args": [
               {
                 "name": "environmentId",
@@ -22927,7 +22933,7 @@
           },
           {
             "name": "serviceInstanceVulnRemediationPatchNow",
-            "description": "Immediately apply a platform-armed Postgres security update (backup + redeploy). Returns the new deployment id.",
+            "description": "Immediately apply a platform-armed database security update (backup + redeploy). Returns the new deployment id.",
             "args": [
               {
                 "name": "environmentId",
@@ -29745,6 +29751,12 @@
           },
           {
             "name": "UPDATED_VM_QUERIES",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "VM_COUPON_MIGRATION",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
