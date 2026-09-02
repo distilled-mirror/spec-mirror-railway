@@ -81,7 +81,6 @@ type AccessRule {
 }
 
 enum ActiveFeatureFlag {
-  ACCESS_GROUPS
   AGENT_BYOK
   AGENT_CONNECTORS
   AGENT_USAGE_WARNINGS
@@ -127,6 +126,7 @@ enum ActivePlatformFlag {
   PRE_DEPLOY_TIMEOUT_KILLSWITCH
   PROJECT_FAVORITES
   REMOVE_DEPLOYMENT_COMPACT
+  RESTRICTION_APPEALS
   SERVICEINSTANCE_DATALOADER_FOR_STATIC_URL
   SPLIT_USAGE_QUERIES
   STRIPE_METERS_NEW_ACCOUNTS
@@ -529,12 +529,36 @@ type CloudAgent {
   status: CloudAgentStatus!
 }
 
+"""A checkpoint of a cloud agent's disk."""
+type CloudAgentCheckpoint {
+  createdAt: DateTime!
+  environmentId: String!
+
+  """Why the capture failed."""
+  failureReason: String
+  id: ID!
+  name: String
+
+  """Region the checkpoint was captured in."""
+  region: String!
+  status: CloudAgentCheckpointStatus!
+}
+
+"""Capture progress of a cloud agent checkpoint."""
+enum CloudAgentCheckpointStatus {
+  FAILED
+  IN_PROGRESS
+  SUCCEEDED
+}
+
 input CloudAgentCreateInput {
+  """Create the cloud agent from an existing checkpoint."""
+  cloudAgentCheckpointId: String
   environmentId: String!
   name: String
 
   """
-  Region to run the agent in, e.g. us-west2. Defaults to the workspace's preferred region when agents are available there.
+  Region to run the agent in, e.g. us-west2. Defaults to the checkpoint's region when booting from one, else the workspace's preferred region.
   """
   region: String
   source: CloudAgentSourceInput
@@ -2089,11 +2113,22 @@ type Mutation {
   """Track events from the Railway CLI"""
   cliEventTrack(input: CliEventTrackInput!): Boolean!
 
+  """
+  Checkpoint the agent's disk. Poll cloudAgentCheckpoint until SUCCEEDED.
+  """
+  cloudAgentCheckpointCreate(id: ID!, name: String): CloudAgentCheckpoint!
+
+  """Delete a checkpoint."""
+  cloudAgentCheckpointDelete(id: ID!): Boolean!
+
   """Create a cloud agent."""
   cloudAgentCreate(input: CloudAgentCreateInput!): CloudAgent!
 
   """Delete a cloud agent."""
   cloudAgentDelete(id: ID!): Boolean!
+
+  """Duplicate a running cloud agent."""
+  cloudAgentFork(id: ID!, name: String, variables: JSON): CloudAgent!
 
   """
   Mint a short-lived (5m) JWT for the agent's harness WebSocket (see agentWsUrl). The in-VM gate verifies signature/exp/aud and pins it to this agent. Mint one per dial; the token only has to survive the upgrade.
@@ -3402,6 +3437,7 @@ enum PlatformFeatureFlag {
   PRE_DEPLOY_TIMEOUT_KILLSWITCH
   PROJECT_FAVORITES
   REMOVE_DEPLOYMENT_COMPACT
+  RESTRICTION_APPEALS
   SERVICEINSTANCE_DATALOADER_FOR_STATIC_URL
   SPLIT_USAGE_QUERIES
   STRIPE_METERS_NEW_ACCOUNTS
@@ -4029,6 +4065,12 @@ type Query {
   """
   cloudAgent(environmentId: ID!, id: ID!): CloudAgent
 
+  """A cloud agent checkpoint by ID."""
+  cloudAgentCheckpoint(id: ID!): CloudAgentCheckpoint!
+
+  """Cloud agent checkpoints in an environment, newest first."""
+  cloudAgentCheckpoints(after: String, before: String, environmentId: ID!, first: Int, last: Int): QueryCloudAgentCheckpointsConnection!
+
   """
   Shell and exec sessions running on a cloud agent's VM that you can reconnect to. Null if the agent has no running machine.
   """
@@ -4577,8 +4619,20 @@ type Query {
   """
   sandboxTemplateBuild(environmentId: String!, id: ID!): SandboxTemplateBuild!
 
-  """List sandboxes in an environment."""
-  sandboxes(after: String, before: String, environmentId: String!, first: Int, last: Int): QuerySandboxesConnection!
+  """
+  List sandboxes in an environment, newest first. Passing first/after paginates; omitting them returns the full list.
+  """
+  sandboxes(
+    """
+    true = live sandboxes only (excludes destroyed; FAILED and transitional states are still included), false = destroyed only, omitted = all.
+    """
+    active: Boolean
+    after: String
+    before: String
+    environmentId: String!
+    first: Int
+    last: Int
+  ): QuerySandboxesConnection!
 
   """Get a service by ID"""
   service(id: String!): Service!
@@ -4817,6 +4871,16 @@ type QueryAuditLogsConnection {
 type QueryAuditLogsConnectionEdge {
   cursor: String!
   node: AuditLog!
+}
+
+type QueryCloudAgentCheckpointsConnection {
+  edges: [QueryCloudAgentCheckpointsConnectionEdge!]!
+  pageInfo: PageInfo!
+}
+
+type QueryCloudAgentCheckpointsConnectionEdge {
+  cursor: String!
+  node: CloudAgentCheckpoint!
 }
 
 type QueryCloudAgentConsoleSessionsConnection {
@@ -5331,6 +5395,10 @@ type Sandbox {
   createdAt: DateTime!
   environmentId: String!
   id: ID!
+
+  """
+  Minutes of inactivity before the sandbox is destroyed. 0 means it never idles out; null means unknown, including for a destroyed sandbox.
+  """
   idleTimeoutMinutes: Int
   networkIsolation: SandboxNetworkIsolation!
   region: String!
@@ -5353,6 +5421,10 @@ type SandboxCheckpoint {
 
 input SandboxCreateInput {
   environmentId: String!
+
+  """
+  Minutes of inactivity before the sandbox is destroyed. Any value <= 0 means never idle out (plan-gated). Defaults to the plan's default idle timeout.
+  """
   idleTimeoutMinutes: Int
 
   """
