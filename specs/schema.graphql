@@ -88,12 +88,9 @@ enum ActiveFeatureFlag {
   CLOUD_AGENTS
   CLOUD_AGENT_CHAT
   DEBUG_SMART_DIAGNOSIS
-  HA_FOR_ALL_TEMPLATES
   IN_DASHBOARD_SUPPORT
   MAGIC_CONFIG
   MYSQL_PITR
-  POSTGRES_MAJOR_UPGRADE
-  POSTGRES_VULN_AUTO_UPDATE
   PRIORITY_BOARDING
   PROJECT_FAVORITES
   PROJECT_SANDBOXES
@@ -2440,6 +2437,11 @@ type Mutation {
   """Deletes a project."""
   projectDelete(id: String!): Boolean!
 
+  """
+  Star or unstar a project for the authenticated user. Returns the resulting state.
+  """
+  projectFavoriteSet(favorite: Boolean!, projectId: String!): Boolean!
+
   """Add a feature flag for a project"""
   projectFeatureFlagAdd(input: ProjectFeatureFlagToggleInput!): Boolean!
 
@@ -3278,6 +3280,13 @@ input ObservabilityDashboardUpdateInput {
   id: String!
 }
 
+enum OperationStatus {
+  applied
+  applying
+  failed
+  staged
+}
+
 type PageInfo {
   endCursor: String
   hasNextPage: Boolean!
@@ -3399,6 +3408,18 @@ type PitrHaWorkflowProgress {
   startedAt: String!
   updatedAt: String!
   workflowId: String!
+}
+
+"""
+Estimated destination-volume scratch a PITR restore to a target needs: the base backup's data plus every WAL segment replayed from that backup to the target (Postgres holds replayed WAL in pg_wal faster than restartpoints recycle it). A conservative over-estimate for a non-blocking pre-restore warning — not a gate.
+"""
+type PitrRestoreScratchEstimate {
+  baseBackupLabel: String!
+  dataMB: Int!
+  estimatedScratchMB: Int!
+  likelyToFit: Boolean!
+  planMaxSizeMB: Int!
+  walMB: Int!
 }
 
 enum Plan {
@@ -3638,6 +3659,11 @@ type Project implements Node {
   team: Team @deprecated(reason: "Use workspace")
   teamId: String @deprecated(reason: "Use workspaceId")
   updatedAt: DateTime!
+
+  """
+  Highest project-scoped role the current user holds on this project, through a direct project permission or an access group. Does not include the workspace role.
+  """
+  viewerRole: ProjectRole
   volumes(after: String, before: String, first: Int, last: Int): ProjectVolumesConnection!
   workspace: Workspace
   workspaceId: String
@@ -3791,6 +3817,28 @@ input ProjectMemberUpdateInput {
   projectId: String!
   role: ProjectRole!
   userId: String!
+}
+
+type ProjectOperation {
+  actor: ProjectOperationActor!
+  changes: JSON!
+
+  """In-flight child operations (e.g. deployments created by this patch)."""
+  children: [ProjectOperation!]!
+  environmentId: String!
+  finishedAt: DateTime
+  id: String!
+  kind: String!
+  parentRef: String
+  startedAt: DateTime!
+  status: OperationStatus!
+  workflowId: String
+}
+
+type ProjectOperationActor {
+  onBehalfOf: String
+  principal: String
+  surface: String
 }
 
 type ProjectPermission implements Node {
@@ -4218,6 +4266,11 @@ type Query {
   """Get the patches for an environment"""
   environmentPatches(after: String, before: String, environmentId: String!, first: Int, last: Int): QueryEnvironmentPatchesConnection!
 
+  """
+  Pending project-mutating work for an environment. Unions registered OperationSources (patches, standalone deploys) and returns parent rows only — not a stored inbox.
+  """
+  environmentPendingWork(environmentId: String!): [ProjectOperation!]!
+
   """Get the latest staged commit for a single environment."""
   environmentStagedChanges(environmentId: String!): EnvironmentPatch!
 
@@ -4531,6 +4584,11 @@ type Query {
   """
   projectCompliance(projectId: String!): ProjectComplianceInfo!
 
+  """
+  The authenticated user's favorited project ids in a workspace, in the order the Favorites row should render them. Defaults to the order they were starred in.
+  """
+  projectFavorites(orderBy: ProjectsOrderBy, workspaceId: String!): [String!]!
+
   """Get a project invitation by code"""
   projectInvitation(code: String!): PublicProjectInvitation!
 
@@ -4817,6 +4875,22 @@ type Query {
     """The id of the volume instance to list the schedules of"""
     volumeInstanceId: String!
   ): [VolumeInstanceBackupSchedule!]!
+
+  """
+  Estimated destination-volume scratch a PITR restore of this volume instance to a target would need, and whether it fits the workspace plan's max volume size. Read-only pre-check the restore dialog calls to warn before a restore that would fill the disk mid-replay; returns null when no estimate can be formed (non-pgBackRest source, incomplete archive creds, or a target before the earliest backup).
+  """
+  volumeInstancePitrRestoreEstimate(
+    """
+    Multi-history picker's selected archive sub-prefix, matching the restore mutation's argument. Pass null for the source's current history.
+    """
+    sourceRepoPath: String
+
+    """Point-in-time target the estimate is computed for"""
+    targetTimestamp: DateTime!
+
+    """The id of the source volume instance to restore from"""
+    volumeInstanceId: String!
+  ): PitrRestoreScratchEstimate
 
   """Gets the status of a workflow"""
   workflowStatus(workflowId: String!): WorkflowResult!
