@@ -1030,6 +1030,12 @@
         "interfaces": null,
         "enumValues": [
           {
+            "name": "AGENT_USAGE_CH_INGEST",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "AGENT_USAGE_WARNINGS",
             "description": null,
             "isDeprecated": false,
@@ -1210,7 +1216,19 @@
             "deprecationReason": null
           },
           {
+            "name": "USAGE_CH_READ",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "VM_COUPON_MIGRATION",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "VM_USAGE_CH_INGEST",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
@@ -16421,6 +16439,36 @@
         "interfaces": null,
         "enumValues": [
           {
+            "name": "AGENT_CACHE_READ_TOKENS",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "AGENT_CACHE_WRITE_TOKENS",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "AGENT_INPUT_TOKENS",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "AGENT_OUTPUT_TOKENS",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "AGENT_SPEND_USD",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "BACKUP_USAGE_GB",
             "description": null,
             "isDeprecated": false,
@@ -16504,6 +16552,12 @@
         "interfaces": null,
         "enumValues": [
           {
+            "name": "BILLABLE",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "DEPLOYMENT_ID",
             "description": null,
             "isDeprecated": false,
@@ -16522,6 +16576,12 @@
             "deprecationReason": null
           },
           {
+            "name": "FEATURE",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "HOST_TYPE",
             "description": null,
             "isDeprecated": false,
@@ -16529,6 +16589,12 @@
           },
           {
             "name": "KEY_UNSPECIFIED",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "MODEL",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
@@ -16564,6 +16630,12 @@
             "deprecationReason": null
           },
           {
+            "name": "VM_ID",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "VOLUME_ID",
             "description": null,
             "isDeprecated": false,
@@ -16571,6 +16643,12 @@
           },
           {
             "name": "VOLUME_INSTANCE_ID",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "WORKLOAD_KIND",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
@@ -30028,6 +30106,12 @@
         "interfaces": null,
         "enumValues": [
           {
+            "name": "AGENT_USAGE_CH_INGEST",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "AGENT_USAGE_WARNINGS",
             "description": null,
             "isDeprecated": false,
@@ -30208,7 +30292,19 @@
             "deprecationReason": null
           },
           {
+            "name": "USAGE_CH_READ",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "VM_COUPON_MIGRATION",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "VM_USAGE_CH_INGEST",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
