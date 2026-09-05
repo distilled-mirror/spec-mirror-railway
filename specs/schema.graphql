@@ -88,6 +88,7 @@ enum ActiveFeatureFlag {
   CLOUD_AGENTS
   CLOUD_AGENT_CHAT
   DEBUG_SMART_DIAGNOSIS
+  EMAIL_FORWARDING
   IN_DASHBOARD_SUPPORT
   MAGIC_CONFIG
   MYSQL_PITR
@@ -95,6 +96,7 @@ enum ActiveFeatureFlag {
   PROJECT_FAVORITES
   PROJECT_SANDBOXES
   TEMPLATE_CHAT
+  USAGE_INSIGHTS
   VM_STORAGE_TRACES
 }
 
@@ -116,6 +118,7 @@ enum ActivePlatformFlag {
   DEV_STUDIO
   DEV_STUDIO_ANON_PROVISIONS
   DOMAIN_RECONCILE_KILLSWITCH
+  EMAIL_FORWARDING_KILLSWITCH
   IN_DASHBOARD_SUPPORT
   KAFKA_EPHEMERAL_ENVIRONMENT_UPDATES
   LOGS_LONG_WINDOW_CHUNKING
@@ -130,8 +133,6 @@ enum ActivePlatformFlag {
   STRIPE_METERS_NEW_ACCOUNTS
   STRIPE_METERS_SHADOW_ENABLED
   UPDATED_VM_QUERIES
-  USAGE_CH_READ
-  VM_COUPON_MIGRATION
   VM_USAGE_CH_INGEST
   WORKSPACE_MCP_KILLSWITCH
 }
@@ -185,6 +186,7 @@ input AgentUsageLimitSetInput {
 type AgentUsageSummary {
   billingPeriodEnd: DateTime!
   hardLimitCents: Int
+  hasCustomHardLimit: Boolean
   softLimitCents: Int
   totalUsedCents: Int!
   usageRemaining: Float
@@ -1436,6 +1438,7 @@ type EnvironmentPatch implements Node {
 enum EnvironmentPatchStatus {
   APPLYING
   COMMITTED
+  FAILED
   STAGED
 }
 
@@ -2103,7 +2106,7 @@ type Mutation {
   bucketUpdate(id: String!, input: BucketUpdateInput!): Bucket!
 
   """
-  Cancels an in-progress PITR enable/disable rollout on a Postgres HA cluster and resets its progress so the UI re-reads from the live cluster. No-ops when nothing is running.
+  Cancels an in-progress PITR enable/disable rollout on an HA database cluster and resets its progress so the UI re-reads from the live cluster. No-ops when nothing is running.
   """
   cancelPitrHaWorkflow(environmentId: String!, rootServiceId: String!): Boolean!
 
@@ -2208,7 +2211,7 @@ type Mutation {
   deploymentTriggerUpdate(id: String!, input: DeploymentTriggerUpdateInput!): DeploymentTrigger!
 
   """
-  Disables point-in-time recovery on a Postgres HA cluster with the same rolling rollout as enable. The backup bucket is left intact, so existing backup history is preserved.
+  Disables point-in-time recovery on an HA database cluster with the same rolling rollout as enable. The backup bucket is left intact, so existing backup history is preserved.
   """
   disablePitrForHaCluster(input: DisablePitrForHaClusterInput!): TemplateDeployPayload!
 
@@ -2248,7 +2251,7 @@ type Mutation {
   emailChangeInitiate(newEmail: String!): Boolean!
 
   """
-  Enables point-in-time recovery on a Postgres HA cluster with a rolling, near-zero-downtime rollout across its members. Safe to retry.
+  Enables point-in-time recovery on an HA database cluster (Postgres HA, MySQL HA) with a rolling, near-zero-downtime rollout across its members. Safe to retry.
   """
   enablePitrForHaCluster(input: EnablePitrForHaClusterInput!): TemplateDeployPayload!
 
@@ -2297,6 +2300,11 @@ type Mutation {
     """Skip deploys for services affected by this patch."""
     skipDeploys: Boolean
   ): String!
+
+  """
+  Copy a FAILED patch's changes into the environment's staged patch (creating one if needed). The FAILED patch is left untouched.
+  """
+  environmentPatchRestage(patchId: String!): EnvironmentPatch!
 
   """
   Experimental: previews an intent-level RailwayChangeSet without side effects.
@@ -2538,6 +2546,25 @@ type Mutation {
 
   """Update a DNS record for a Railway domain"""
   railwayDomainDnsRecordUpdate(input: RailwayDomainDnsRecordUpdateInput!): RailwayDomainDnsRecord!
+
+  """
+  Stop forwarding every address on this domain, and remove the mail records that delivered them
+  """
+  railwayDomainEmailForwardingRemoveAll(input: RailwayDomainEmailForwardingRemoveAllInput!): RailwayDomainEmailForwardingTeardown!
+
+  """Forward an address on this domain to an external inbox"""
+  railwayDomainEmailForwardingRuleCreate(input: RailwayDomainEmailForwardingRuleCreateInput!): RailwayDomainEmailForwardingRule!
+
+  """Stop forwarding an address on this domain"""
+  railwayDomainEmailForwardingRuleDelete(input: RailwayDomainEmailForwardingRuleDeleteInput!): Boolean!
+
+  """
+  Send a message to a forwarded address so the customer can confirm it delivers.
+  """
+  railwayDomainEmailForwardingRuleSendTest(input: RailwayDomainEmailForwardingRuleTestInput!): RailwayDomainEmailForwardingRule!
+
+  """Change where a forwarded address delivers"""
+  railwayDomainEmailForwardingRuleUpdate(input: RailwayDomainEmailForwardingRuleUpdateInput!): RailwayDomainEmailForwardingRule!
 
   """
   Delegate the domain's authoritative nameservers to an external DNS provider, or reset to Railway defaults by passing an empty list.
@@ -3348,7 +3375,7 @@ type PaymentMethodCard {
 }
 
 """
-Live replication health of a Postgres HA cluster's members. Used to gate the Enable/Disable PITR buttons on the same 'caught up' definition the rollout enforces.
+Live replication health of an HA database cluster's members. Used to gate the Enable/Disable PITR buttons on the same 'caught up' definition the rollout enforces.
 """
 type PitrHaClusterReplicationHealth {
   allHealthy: Boolean!
@@ -3403,13 +3430,14 @@ enum PitrHaWorkflowPhase {
 }
 
 """
-Progress of an in-flight or recently completed PITR enable/disable rollout on a Postgres HA cluster.
+Progress of an in-flight or recently completed PITR enable/disable rollout on an HA database cluster.
 """
 type PitrHaWorkflowProgress {
   clusterMutated: Boolean!
   completedAt: String
   currentMemberServiceId: String
   direction: PitrHaWorkflowDirection!
+  engine: String
   environmentId: String!
   errorMessage: String
   failedAtPhase: PitrHaWorkflowPhase
@@ -3464,6 +3492,7 @@ enum PlatformFeatureFlag {
   DEV_STUDIO
   DEV_STUDIO_ANON_PROVISIONS
   DOMAIN_RECONCILE_KILLSWITCH
+  EMAIL_FORWARDING_KILLSWITCH
   IN_DASHBOARD_SUPPORT
   KAFKA_EPHEMERAL_ENVIRONMENT_UPDATES
   LOGS_LONG_WINDOW_CHUNKING
@@ -3478,8 +3507,6 @@ enum PlatformFeatureFlag {
   STRIPE_METERS_NEW_ACCOUNTS
   STRIPE_METERS_SHADOW_ENABLED
   UPDATED_VM_QUERIES
-  USAGE_CH_READ
-  VM_COUPON_MIGRATION
   VM_USAGE_CH_INGEST
   WORKSPACE_MCP_KILLSWITCH
 }
@@ -4551,12 +4578,12 @@ type Query {
   passkeys(after: String, before: String, first: Int, last: Int): QueryPasskeysConnection!
 
   """
-  Live replication health for a Postgres HA cluster. Use it to gate the Enable/Disable PITR buttons so a rollout can't start while a replica is too far behind to rejoin. Returns null when the service isn't an HA root.
+  Live replication health for an HA database cluster (Postgres HA, MySQL HA). Use it to gate the Enable/Disable PITR buttons so a rollout can't start while a member is too far behind to rejoin. Returns null when the service isn't an HA root.
   """
   pitrHaClusterReplicationHealth(environmentId: String!, rootServiceId: String!): PitrHaClusterReplicationHealth
 
   """
-  One-shot read of the current progress of a PITR enable/disable rollout on a Postgres HA cluster. Use it to rehydrate state on page load, then poll this field for updates. Returns null when no rollout has run recently.
+  One-shot read of the current progress of a PITR enable/disable rollout on an HA database cluster. Use it to rehydrate state on page load, then poll this field for updates. Returns null when no rollout has run recently.
   """
   pitrHaWorkflowProgress(environmentId: String!, rootServiceId: String!): PitrHaWorkflowProgress
 
@@ -4664,6 +4691,19 @@ type Query {
 
   """List DNS records for a Railway domain"""
   railwayDomainDnsRecords(domain: String!, workspaceId: String!): [RailwayDomainDnsRecord!]!
+
+  """
+  Whether email forwarding can be offered on this domain, or why it can't.
+  """
+  railwayDomainEmailForwardingEligibility(domain: String!, workspaceId: String!): RailwayDomainEmailForwardingEligibility!
+
+  """
+  Caps the forwarding UI surfaces before a rule is rejected server-side. Pass workspaceId for that workspace's alias allowance; without it the highest plan's is returned.
+  """
+  railwayDomainEmailForwardingLimits(workspaceId: String): RailwayDomainEmailForwardingLimits!
+
+  """List email forwarding rules for a Railway domain"""
+  railwayDomainEmailForwardingRules(domain: String!, workspaceId: String!): [RailwayDomainEmailForwardingRule!]!
 
   """Get Railway domains for a workspace"""
   railwayDomains(status: RailwayDomainStatus, workspaceId: String!): [RailwayDomain!]!
@@ -5279,6 +5319,11 @@ input RailwayDomainDnsRecordCreateInput {
 input RailwayDomainDnsRecordDeleteInput {
   domain: String!
   recordId: Int!
+
+  """
+  Confirms that deleting a mail exchange may also remove every forwarding address and its sibling exchanges.
+  """
+  removeEmailForwarding: Boolean
   workspaceId: String!
 }
 
@@ -5302,6 +5347,62 @@ input RailwayDomainDnsRecordUpdateInput {
   ttl: Int
   type: RailwayDomainDnsRecordType!
   workspaceId: String!
+}
+
+enum RailwayDomainEmailForwardingEligibility {
+  DELEGATED
+  ELIGIBLE
+  EXTERNAL_MAIL
+  UNKNOWN
+}
+
+type RailwayDomainEmailForwardingLimits {
+  maxAliases: Int!
+}
+
+input RailwayDomainEmailForwardingRemoveAllInput {
+  domain: String!
+  workspaceId: String!
+}
+
+type RailwayDomainEmailForwardingRule {
+  """Local part of the forwarded address, without the domain."""
+  alias: String!
+
+  """The external inbox mail for this alias is delivered to."""
+  destination: String!
+}
+
+input RailwayDomainEmailForwardingRuleCreateInput {
+  alias: String!
+  destination: String!
+  domain: String!
+  workspaceId: String!
+}
+
+input RailwayDomainEmailForwardingRuleDeleteInput {
+  alias: String!
+  domain: String!
+  workspaceId: String!
+}
+
+input RailwayDomainEmailForwardingRuleTestInput {
+  alias: String!
+  domain: String!
+  workspaceId: String!
+}
+
+input RailwayDomainEmailForwardingRuleUpdateInput {
+  alias: String!
+  destination: String!
+  domain: String!
+  workspaceId: String!
+}
+
+"""What removing forwarding took out of the zone."""
+type RailwayDomainEmailForwardingTeardown {
+  addressesRemoved: Int!
+  mailRecordsRemoved: Int!
 }
 
 type RailwayDomainNameservers {
@@ -5483,6 +5584,9 @@ type SSHSignupInfo {
 
 type Sandbox {
   createdAt: DateTime!
+
+  """Railway-provided public HTTP domains whose routes have been published."""
+  domains: [SandboxDomain!]!
   environmentId: String!
   id: ID!
 
@@ -5518,9 +5622,14 @@ input SandboxCreateInput {
   idleTimeoutMinutes: Int
 
   """
-  Network access for the sandbox. Defaults to ISOLATED (no private network access).
+  Network access for the sandbox. Defaults to ISOLATED (no private network access). Public domains require PRIVATE to be selected explicitly.
   """
   networkIsolation: SandboxNetworkIsolation
+
+  """
+  Railway-provided HTTP domains to publish, one per unique prefix and port. Supports up to 10 and requires explicitly selecting PRIVATE networking. Domain prefixes are generated when omitted.
+  """
+  publicDomains: [SandboxDomainInput!]
 
   """
   Region to place the sandbox in (e.g. us-west2, us-east4-eqdc4a). Defaults to the platform default region when omitted.
@@ -5537,6 +5646,28 @@ input SandboxCreateInput {
   Environment variables baked into the sandbox, available to every command. Values may contain Railway variable references (e.g. ${{shared.FOO}}, ${{ServiceName.BAR}}), resolved at create time.
   """
   variables: EnvironmentVariables
+}
+
+"""One public domain on a sandbox."""
+type SandboxDomain {
+  """Resolved FQDN."""
+  domain: String!
+
+  """Target port on the sandbox this domain routes to."""
+  port: Int!
+
+  """Label prefix requested when the sandbox was created."""
+  prefix: String!
+}
+
+input SandboxDomainInput {
+  """Target port on the sandbox, from 1 through 65535."""
+  port: Int!
+
+  """
+  Optional DNS label prefix for the generated domain. When omitted, a prefix is generated from the project name. Custom prefixes must be lowercase alphanumeric with optional interior hyphens, up to 46 characters.
+  """
+  prefix: String
 }
 
 type SandboxExecResult {
