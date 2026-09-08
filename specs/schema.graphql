@@ -126,12 +126,15 @@ enum ActivePlatformFlag {
   OAUTH_DCR_KILLSWITCH
   PRE_DEPLOY_TIMEOUT_KILLSWITCH
   PROJECT_FAVORITES
+  PROJECT_HISTORY_DUAL_WRITE
+  PROJECT_HISTORY_READ_FROM_CH
   REMOVE_DEPLOYMENT_COMPACT
   RESTRICTION_APPEALS
   SERVICEINSTANCE_DATALOADER_FOR_STATIC_URL
   SPLIT_USAGE_QUERIES
   STRIPE_METERS_NEW_ACCOUNTS
   STRIPE_METERS_SHADOW_ENABLED
+  UNIFIED_TOKENS_AUTHORIZATION_SHADOW
   UPDATED_VM_QUERIES
   VM_USAGE_CH_INGEST
   WORKSPACE_MCP_KILLSWITCH
@@ -1564,7 +1567,6 @@ type ExternalWorkspace {
   projects: [Project!]!
   redactedDueTo2FAPending: Boolean!
   subscriptionPlanLimit: SubscriptionPlanLimit
-  supportTierOverride: String
   teamId: String
 }
 
@@ -1688,6 +1690,15 @@ input HerokuImportVariablesInput {
   herokuAppId: String!
   projectId: String!
   serviceId: String!
+}
+
+input HistoryFilterInput {
+  actions: [String!]
+  objects: [String!]
+
+  """Any of '', 'applied', 'failed'."""
+  outcomes: [String!]
+  serviceIds: [String!]
 }
 
 """The result of an HTTP duration metrics query."""
@@ -3037,6 +3048,17 @@ type Mutation {
   workspaceUserRemove(input: WorkspaceUserRemoveInput!, workspaceId: String!): Boolean!
 }
 
+type MysqlPitrRestorableWindow {
+  archiveConfigured: Boolean!
+  ceilingAt: String
+  fetchedAt: String!
+  floorAt: String
+  fullBackupCount: Int!
+  fullBackupsTakenAt: [String!]!
+  lineageCount: Int!
+  listingTruncated: Boolean!
+}
+
 """The direction of a network flow relative to the service"""
 enum NetworkFlowDirection {
   egress
@@ -3500,12 +3522,15 @@ enum PlatformFeatureFlag {
   OAUTH_DCR_KILLSWITCH
   PRE_DEPLOY_TIMEOUT_KILLSWITCH
   PROJECT_FAVORITES
+  PROJECT_HISTORY_DUAL_WRITE
+  PROJECT_HISTORY_READ_FROM_CH
   REMOVE_DEPLOYMENT_COMPACT
   RESTRICTION_APPEALS
   SERVICEINSTANCE_DATALOADER_FOR_STATIC_URL
   SPLIT_USAGE_QUERIES
   STRIPE_METERS_NEW_ACCOUNTS
   STRIPE_METERS_SHADOW_ENABLED
+  UNIFIED_TOKENS_AUTHORIZATION_SHADOW
   UPDATED_VM_QUERIES
   VM_USAGE_CH_INGEST
   WORKSPACE_MCP_KILLSWITCH
@@ -3796,6 +3821,51 @@ type ProjectGroupsConnection {
 type ProjectGroupsConnectionEdge {
   cursor: String!
   node: Group!
+}
+
+type ProjectHistoryConnection {
+  edges: [ProjectHistoryEntryEdge!]!
+  pageInfo: ProjectHistoryPageInfo!
+}
+
+"""
+One settled change in an environment: a system event or a terminal operation (patch, deploy, …).
+"""
+type ProjectHistoryEntry {
+  action: String!
+
+  """
+  Minimal payload for activity feed list rendering. Same trimming as Event.activityPayload.
+  """
+  activityPayload: JSON
+  actor: ProjectOperationActor!
+  changes: JSON!
+
+  """When the change settled."""
+  createdAt: DateTime!
+  id: String!
+  object: String!
+
+  """'' for a plain event; e.g. 'patch', 'deploy' for operations."""
+  operationKind: String!
+
+  """'' for a plain event; 'applied' or 'failed' for operations."""
+  outcome: String!
+  parentRef: String
+  payload: JSON
+  severity: EventSeverity!
+  source: String!
+  workflowId: String
+}
+
+type ProjectHistoryEntryEdge {
+  cursor: String!
+  node: ProjectHistoryEntry!
+}
+
+type ProjectHistoryPageInfo {
+  endCursor: String
+  hasNextPage: Boolean!
 }
 
 type ProjectInvitation {
@@ -4280,6 +4350,11 @@ type Query {
   environmentHasLegacyStaticEgress(environmentId: String!): Boolean!
 
   """
+  Settled history for an environment (system events + terminal operations), newest first. Cursor-paginated.
+  """
+  environmentHistory(after: String, environmentId: String!, filter: HistoryFilterInput, first: Int): ProjectHistoryConnection!
+
+  """
   Fetch logs for a project environment. Build logs are excluded unless a snapshot ID is explicitly provided in the filter
   """
   environmentLogs(
@@ -4531,6 +4606,11 @@ type Query {
   Cloud agents you own, across every project and environment you can reach. Answers "where are my agents" in one request; `cloudAgents` needs one call per environment. Machine fields (`status`, `domain`, `domains`) read the last observed state in batched queries, so selecting them across many environments is fine.
   """
   myCloudAgents: [CloudAgent!]!
+
+  """
+  The point-in-time window a MySQL service's binlog archive can restore to, resolved from the archive bucket: the oldest full backup (floor), the newest shipped binlog (ceiling) and every full backup's timestamp. archiveConfigured is false when the service carries no complete BINLOG_ARCHIVE_* contract.
+  """
+  mysqlPitrRestorableWindow(environmentId: String!, serviceId: String!): MysqlPitrRestorableWindow!
 
   """Fetch individual network flow logs for an environment"""
   networkFlowLogs(
@@ -6460,11 +6540,6 @@ enum SubscriptionState {
 "\nSupport Health Metrics for Template Support Bonus Calculation..\nContains metrics calculated from community support thread performance:\n- solved: Percentage (0-100) of solved threads\n- csat: Percentage (0-100) of threads with positive customer satisfaction\n- aggregateHealth: Average of solved and csat when both available, otherwise just solved percentage\nTemplates with aggregateHealth >= 80 qualify for support bonus (additional 10% kickback).\n"
 scalar SupportHealthMetrics
 
-enum SupportTierOverride {
-  BUSINESS_CLASS
-  BUSINESS_CLASS_TRIAL
-}
-
 type TCPProxy {
   applicationPort: Int!
   createdAt: DateTime
@@ -6506,7 +6581,6 @@ type Team implements Node {
   preferredRegion: String @deprecated(reason: "Use workspace object instead")
   projects(after: String, before: String, first: Int, last: Int): TeamProjectsConnection! @deprecated(reason: "Use workspace object instead")
   slackChannelId: String @deprecated(reason: "Use workspace object instead")
-  supportTierOverride: SupportTierOverride @deprecated(reason: "Use workspace object instead")
   teamPermissions: [TeamPermission!]! @deprecated(reason: "Use workspace object instead")
   updatedAt: DateTime! @deprecated(reason: "Use workspace object instead")
   workspace: Workspace! @deprecated(reason: "Use workspace object instead")
@@ -7278,7 +7352,6 @@ type Workspace implements Node {
   slackChannelId: String
   subscriptionModel: SubscriptionModel! @deprecated(reason: "Use plan field instead")
   subscriptionPlanLimit: SubscriptionPlanLimit
-  supportTierOverride: SupportTierOverride
   team: Team @deprecated(reason: "Teams are being removed from the system, don't use it")
   updatedAt: DateTime!
 
