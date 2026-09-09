@@ -81,19 +81,19 @@ type AccessRule {
 }
 
 enum ActiveFeatureFlag {
+  ACTIVITY_FEED_HISTORY
   AGENT_BYOK
   AGENT_CONNECTORS
-  AGENT_USAGE_WARNINGS
   CHAT_SANDBOX
   CLOUD_AGENTS
   CLOUD_AGENT_CHAT
+  CS_MCP_EXPRESS
   DEBUG_SMART_DIAGNOSIS
   EMAIL_FORWARDING
   IN_DASHBOARD_SUPPORT
   MAGIC_CONFIG
   MYSQL_PITR
   PRIORITY_BOARDING
-  PROJECT_FAVORITES
   PROJECT_SANDBOXES
   TEMPLATE_CHAT
   USAGE_INSIGHTS
@@ -102,7 +102,6 @@ enum ActiveFeatureFlag {
 
 enum ActivePlatformFlag {
   AGENT_USAGE_CH_INGEST
-  AGENT_USAGE_WARNINGS
   ALERT_SUS_USERS_CRON_KILLSWITCH
   BUILD_DEPLOY_QUEUE_V2
   CAC_T0_KILLSWITCH
@@ -110,6 +109,7 @@ enum ActivePlatformFlag {
   CHAT_SANDBOX
   CLICKHOUSE_WORKSPACE_LIMIT_ENFORCE
   CS_MCP
+  CS_MCP_EXPRESS
   CTRD_IMAGE_STORE_ROLLOUT
   DEFAULT_USAGE_ALERTS
   DEMO_PERCENTAGE_ROLLOUT
@@ -123,19 +123,20 @@ enum ActivePlatformFlag {
   KAFKA_EPHEMERAL_ENVIRONMENT_UPDATES
   LOGS_LONG_WINDOW_CHUNKING
   NEW_STRIPE_WEBHOOK_VERSION_ROLLOUT
+  NUDGES
   OAUTH_DCR_KILLSWITCH
   PRE_DEPLOY_TIMEOUT_KILLSWITCH
-  PROJECT_FAVORITES
   PROJECT_HISTORY_DUAL_WRITE
   PROJECT_HISTORY_READ_FROM_CH
   REMOVE_DEPLOYMENT_COMPACT
-  RESTRICTION_APPEALS
   SERVICEINSTANCE_DATALOADER_FOR_STATIC_URL
   SPLIT_USAGE_QUERIES
   STRIPE_METERS_NEW_ACCOUNTS
   STRIPE_METERS_SHADOW_ENABLED
   UNIFIED_TOKENS_AUTHORIZATION_SHADOW
   UPDATED_VM_QUERIES
+  USAGE_CH_READS
+  VM_COUPON_MIGRATION
   VM_USAGE_CH_INGEST
   WORKSPACE_MCP_KILLSWITCH
 }
@@ -445,6 +446,7 @@ type ChangeSetApplyResult {
   deploymentId: String
   diagnostics: JSON!
   id: String!
+  operationId: String
   stagedPatchId: String
   status: String!
 }
@@ -607,6 +609,11 @@ type CloudAgentSnapshot {
   state: String!
   taskId: String
   terminal: Boolean!
+
+  """
+  Generated display title for the session, display-only. Null until generated; fall back to latestPrompt, then prompt.
+  """
+  title: String
   updatedAt: String!
 }
 
@@ -2629,7 +2636,7 @@ type Mutation {
   """Deletes a service."""
   serviceDelete(
     """
-    [Experimental] Environment ID. If the environment is a forked environment, the service will only be deleted in the specified environment, otherwise it will deleted in all environments that are not forks of other environments
+    Environment ID. When set, the service is deleted only in that environment; the service itself is deleted once no instances remain in any environment. When omitted, the service is deleted in every environment that is not a fork of another environment.
     """
     environmentId: String
     id: String!
@@ -3498,7 +3505,6 @@ type PlanLimitOverride implements Node {
 
 enum PlatformFeatureFlag {
   AGENT_USAGE_CH_INGEST
-  AGENT_USAGE_WARNINGS
   ALERT_SUS_USERS_CRON_KILLSWITCH
   BUILD_DEPLOY_QUEUE_V2
   CAC_T0_KILLSWITCH
@@ -3506,6 +3512,7 @@ enum PlatformFeatureFlag {
   CHAT_SANDBOX
   CLICKHOUSE_WORKSPACE_LIMIT_ENFORCE
   CS_MCP
+  CS_MCP_EXPRESS
   CTRD_IMAGE_STORE_ROLLOUT
   DEFAULT_USAGE_ALERTS
   DEMO_PERCENTAGE_ROLLOUT
@@ -3519,19 +3526,20 @@ enum PlatformFeatureFlag {
   KAFKA_EPHEMERAL_ENVIRONMENT_UPDATES
   LOGS_LONG_WINDOW_CHUNKING
   NEW_STRIPE_WEBHOOK_VERSION_ROLLOUT
+  NUDGES
   OAUTH_DCR_KILLSWITCH
   PRE_DEPLOY_TIMEOUT_KILLSWITCH
-  PROJECT_FAVORITES
   PROJECT_HISTORY_DUAL_WRITE
   PROJECT_HISTORY_READ_FROM_CH
   REMOVE_DEPLOYMENT_COMPACT
-  RESTRICTION_APPEALS
   SERVICEINSTANCE_DATALOADER_FOR_STATIC_URL
   SPLIT_USAGE_QUERIES
   STRIPE_METERS_NEW_ACCOUNTS
   STRIPE_METERS_SHADOW_ENABLED
   UNIFIED_TOKENS_AUTHORIZATION_SHADOW
   UPDATED_VM_QUERIES
+  USAGE_CH_READS
+  VM_COUPON_MIGRATION
   VM_USAGE_CH_INGEST
   WORKSPACE_MCP_KILLSWITCH
 }
