@@ -135,9 +135,10 @@ enum ActivePlatformFlag {
   SERVICEINSTANCE_DATALOADER_FOR_STATIC_URL
   SPLIT_USAGE_QUERIES
   SSH_ANON_PROVISIONING
+  STRIPE_INTERACTIVE_SUBSCRIPTION_ON_SESSION
   STRIPE_METERS_NEW_ACCOUNTS
   STRIPE_METERS_SHADOW_ENABLED
-  UNIFIED_TOKENS_AUTHORIZATION_SHADOW
+  STRIPE_WEBHOOK_DISPUTE_CANCELLATION
   UPDATED_VM_QUERIES
   USAGE_CH_READS
   VM_COUPON_MIGRATION
@@ -501,7 +502,7 @@ input CliEventTrackInput {
 """A persistent cloud agent for running coding harnesses."""
 type CloudAgent {
   """
-  WebSocket endpoint of the in-VM harness gate, for the dashboard chat. Survives sleep: the domain is stable across sleep and wake, and the observation keeps it. Null only on agents created before the gate existed, or before their first observation lands.
+  WebSocket endpoint of the in-VM harness gate, for the dashboard chat. Survives sleep: the domain is stable across sleep and wake. Prefers the machine observation; when that carries no gate domain it falls back to the domain network-cp actively serves, so an agent whose observation lagged still offers chat. Null on agents created before the gate existed, or asleep/absent machines.
   """
   agentWsUrl: String
 
@@ -510,7 +511,7 @@ type CloudAgent {
   createdAt: DateTime!
 
   """
-  The first of the agent machine's public domains. Stable across sleep and wake; returns no endpoints while the machine sleeps.
+  The agent machine's public HTTP domain (port 8080) — the live preview. Prefers the observation (falling back to the first declared domain when 8080 was never requested); when the observation carries no domains it falls back to the domain network-cp actively serves on 8080, so a preview shows even when the observation lagged. Returns null while the machine sleeps.
   """
   domain: String
 
@@ -562,9 +563,24 @@ enum CloudAgentCheckpointStatus {
   SUCCEEDED
 }
 
+"""
+Opt-in public code endpoint, provisioned only when creating a cloud agent.
+"""
+input CloudAgentCodeEndpointInput {
+  """
+  Target port. Defaults to 4096; must be 1024-65535, excluding 8080 and 8790.
+  """
+  port: Int
+}
+
 input CloudAgentCreateInput {
   """Create the cloud agent from an existing checkpoint."""
   cloudAgentCheckpointId: String
+
+  """
+  Provision a code-* domain. Omit to disable, including when restoring a checkpoint or bootstrap.
+  """
+  codeEndpoint: CloudAgentCodeEndpointInput
   environmentId: String!
   name: String
 
@@ -663,7 +679,7 @@ input CloudAgentSourceInput {
   """GitHub repo as owner/repo."""
   repo: String
 
-  """Resolve the repo from this service's connected source."""
+  """Resolve the repo from this service's source."""
   serviceId: String
 }
 
@@ -2791,9 +2807,9 @@ type Mutation {
   sshPublicKeyDelete(id: String!): Boolean!
 
   """
-  Approve an SSH signup: register the offered SSH key on the authenticated account so the agent is recognized.
+  Approve an SSH signup: register the offered SSH key on the authenticated account so the agent is recognized. When the key owns an anonymous trial box, claims that trial into workspaceId and re-owns the key.
   """
-  sshSignupApprove(code: String!): Boolean!
+  sshSignupApprove(code: String!, workspaceId: String): Boolean!
 
   """Creates a new TCP proxy for a service instance."""
   tcpProxyCreate(input: TCPProxyCreateInput!): TCPProxy! @deprecated(reason: "Use staged changes and apply them. Creating a TCP proxy with this endpoint requires you to redeploy the service for it to be active.")
@@ -3541,9 +3557,10 @@ enum PlatformFeatureFlag {
   SERVICEINSTANCE_DATALOADER_FOR_STATIC_URL
   SPLIT_USAGE_QUERIES
   SSH_ANON_PROVISIONING
+  STRIPE_INTERACTIVE_SUBSCRIPTION_ON_SESSION
   STRIPE_METERS_NEW_ACCOUNTS
   STRIPE_METERS_SHADOW_ENABLED
-  UNIFIED_TOKENS_AUTHORIZATION_SHADOW
+  STRIPE_WEBHOOK_DISPUTE_CANCELLATION
   UPDATED_VM_QUERIES
   USAGE_CH_READS
   VM_COUPON_MIGRATION
@@ -3868,6 +3885,7 @@ type ProjectHistoryEntry {
   outcome: String!
   parentRef: String
   payload: JSON
+  serviceIds: [String!]!
   severity: EventSeverity!
   source: String!
   workflowId: String
@@ -4893,7 +4911,7 @@ type Query {
   sshPublicKeys(after: String, before: String, first: Int, last: Int, workspaceId: String): QuerySshPublicKeysConnection!
 
   """
-  Details for an SSH signup confirm page: the SSH key fingerprint to verify before binding it to the account.
+  Details for an SSH signup confirm page: the SSH key fingerprint to verify before binding it to the account, and the trial box it owns if any.
   """
   sshSignupInfo(code: String!): SSHSignupInfo!
 
@@ -5673,8 +5691,25 @@ enum RestartPolicyType {
   ON_FAILURE
 }
 
+type SSHSignupClaimableWorkspace {
+  id: String!
+  name: String!
+}
+
 type SSHSignupInfo {
+  claimableWorkspaces: [SSHSignupClaimableWorkspace!]!
   fingerprint: String!
+  trial: SSHSignupTrial
+}
+
+"""
+The anonymous trial box the offered SSH key currently owns; approving the signup claims it.
+"""
+type SSHSignupTrial {
+  buildExpiresAt: DateTime
+  cloudAgentId: String
+  projectId: String!
+  projectName: String!
 }
 
 type Sandbox {
@@ -5732,6 +5767,11 @@ input SandboxCreateInput {
   region: String
 
   """
+  Creation-time CPU and memory, including for forks and checkpoint restores. Each omitted or null field uses the workspace's sandbox default; explicit values must not exceed its independent VM maximum.
+  """
+  resources: SandboxResourcesInput
+
+  """
   Fork an existing running sandbox in this environment. Mutually exclusive with template.
   """
   sourceSandboxId: String
@@ -5782,6 +5822,18 @@ enum SandboxNetworkIsolation {
 
   """Joins the environment's private network."""
   PRIVATE
+}
+
+input SandboxResourcesInput {
+  """
+  Positive vCPU for the new sandbox; fractional values are supported. Omitted or null uses the workspace's sandbox default. Must not exceed its VM maximum.
+  """
+  cpu: Float
+
+  """
+  Memory in decimal GB (1 GB = 1,000,000,000 bytes), rounded to whole bytes. Must be at least 1 byte and at most the workspace's VM maximum. Omitted or null uses its sandbox default.
+  """
+  memoryGB: Float
 }
 
 """
