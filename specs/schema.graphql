@@ -95,7 +95,6 @@ enum ActiveFeatureFlag {
   MAGIC_CONFIG
   MYSQL_PITR
   PRIORITY_BOARDING
-  PROJECT_SANDBOXES
   TEMPLATE_CHAT
   USAGE_INSIGHTS
   VM_STORAGE_TRACES
@@ -125,6 +124,7 @@ enum ActivePlatformFlag {
   LOGS_LONG_WINDOW_CHUNKING
   NEW_STRIPE_WEBHOOK_VERSION_ROLLOUT
   NUDGES
+  NUDGE_BACKUP_SCHEDULE_MISSING
   NUDGE_PUBLIC_DB_URL_WITHIN_PROJECT
   NUDGE_RESUBSCRIBE_AFTER_DEAD_INVOICE
   OAUTH_DCR_KILLSWITCH
@@ -522,6 +522,7 @@ type CloudAgent {
   environmentId: String!
   id: ID!
   name: String!
+  project: Project!
   projectId: String!
 
   """
@@ -2249,6 +2250,16 @@ type Mutation {
   deploymentTriggerUpdate(id: String!, input: DeploymentTriggerUpdateInput!): DeploymentTrigger!
 
   """
+  Forget the box `ssh dev.new` lands you in; the next connection creates a new one.
+  """
+  devNewLandingTargetClear: Boolean!
+
+  """
+  Make this cloud agent the box `ssh dev.new` lands you in. Replaces any previous choice.
+  """
+  devNewLandingTargetSet(cloudAgentId: ID!): CloudAgent!
+
+  """
   Disables point-in-time recovery on an HA database cluster with the same rolling rollout as enable. The backup bucket is left intact, so existing backup history is preserved.
   """
   disablePitrForHaCluster(input: DisablePitrForHaClusterInput!): TemplateDeployPayload!
@@ -3547,6 +3558,7 @@ enum PlatformFeatureFlag {
   LOGS_LONG_WINDOW_CHUNKING
   NEW_STRIPE_WEBHOOK_VERSION_ROLLOUT
   NUDGES
+  NUDGE_BACKUP_SCHEDULE_MISSING
   NUDGE_PUBLIC_DB_URL_WITHIN_PROJECT
   NUDGE_RESUBSCRIBE_AFTER_DEAD_INVOICE
   OAUTH_DCR_KILLSWITCH
@@ -4321,6 +4333,11 @@ type Query {
 
   """Get all deployments"""
   deployments(after: String, before: String, first: Int, input: DeploymentListInput!, last: Int): QueryDeploymentsConnection!
+
+  """
+  The cloud agent `ssh dev.new` lands you in, or null when the next connection will create one.
+  """
+  devNewLandingTarget: CloudAgent
 
   """Fetch individual DNS query logs for an environment"""
   dnsQueryLogs(

@@ -1013,12 +1013,6 @@
             "deprecationReason": null
           },
           {
-            "name": "PROJECT_SANDBOXES",
-            "description": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "TEMPLATE_CHAT",
             "description": null,
             "isDeprecated": false,
@@ -1181,6 +1175,12 @@
           },
           {
             "name": "NUDGES",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "NUDGE_BACKUP_SCHEDULE_MISSING",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
@@ -4412,6 +4412,22 @@
               "ofType": {
                 "name": "String",
                 "kind": "SCALAR",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "project",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": "Project",
+                "kind": "OBJECT",
                 "ofType": null
               }
             },
@@ -18846,6 +18862,53 @@
             "deprecationReason": null
           },
           {
+            "name": "devNewLandingTargetClear",
+            "description": "Forget the box `ssh dev.new` lands you in; the next connection creates a new one.",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": "Boolean",
+                "kind": "SCALAR",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "devNewLandingTargetSet",
+            "description": "Make this cloud agent the box `ssh dev.new` lands you in. Replaces any previous choice.",
+            "args": [
+              {
+                "name": "cloudAgentId",
+                "description": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "name": "ID",
+                    "kind": "SCALAR",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null
+              }
+            ],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": "CloudAgent",
+                "kind": "OBJECT",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "disablePitrForHaCluster",
             "description": "Disables point-in-time recovery on an HA database cluster with the same rolling rollout as enable. The backup bucket is left intact, so existing backup history is preserved.",
             "args": [
@@ -30795,6 +30858,12 @@
             "deprecationReason": null
           },
           {
+            "name": "NUDGE_BACKUP_SCHEDULE_MISSING",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "NUDGE_PUBLIC_DB_URL_WITHIN_PROJECT",
             "description": null,
             "isDeprecated": false,
@@ -38587,6 +38656,18 @@
                 "kind": "OBJECT",
                 "ofType": null
               }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "devNewLandingTarget",
+            "description": "The cloud agent `ssh dev.new` lands you in, or null when the next connection will create one.",
+            "args": [],
+            "type": {
+              "kind": "OBJECT",
+              "name": "CloudAgent",
+              "ofType": null
             },
             "isDeprecated": false,
             "deprecationReason": null
