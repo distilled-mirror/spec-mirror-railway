@@ -1013,7 +1013,19 @@
             "deprecationReason": null
           },
           {
+            "name": "RAILWAY_AGENT_DASHBOARD",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "TEMPLATE_CHAT",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "TRACING",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
@@ -10670,6 +10682,18 @@
             "deprecationReason": null
           },
           {
+            "name": "tracing",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "OBJECT",
+              "name": "EdgeTracingConfig",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "underAttackModeUntil",
             "description": null,
             "args": [],
@@ -10757,6 +10781,45 @@
                 "kind": "SCALAR",
                 "ofType": null
               }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "OBJECT",
+        "name": "EdgeTracingConfig",
+        "description": null,
+        "fields": [
+          {
+            "name": "enabled",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": "Boolean",
+                "kind": "SCALAR",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "sampleRate",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
             },
             "isDeprecated": false,
             "deprecationReason": null
@@ -21028,7 +21091,7 @@
           },
           {
             "name": "privateNetworkCreateOrGet",
-            "description": "Create or get a private network.",
+            "description": "Removed. Private networks and endpoints are managed by the platform; enable private networking on the environment instead.",
             "args": [
               {
                 "name": "input",
@@ -21054,12 +21117,12 @@
                 "ofType": null
               }
             },
-            "isDeprecated": false,
-            "deprecationReason": null
+            "isDeprecated": true,
+            "deprecationReason": "Removed. Private networks and endpoints are managed by the platform; enable private networking on the environment instead."
           },
           {
             "name": "privateNetworkEndpointCreateOrGet",
-            "description": "Create or get a private network endpoint.",
+            "description": "Removed. Private networks and endpoints are managed by the platform; enable private networking on the environment instead.",
             "args": [
               {
                 "name": "input",
@@ -21085,12 +21148,12 @@
                 "ofType": null
               }
             },
-            "isDeprecated": false,
-            "deprecationReason": null
+            "isDeprecated": true,
+            "deprecationReason": "Removed. Private networks and endpoints are managed by the platform; enable private networking on the environment instead."
           },
           {
             "name": "privateNetworkEndpointDelete",
-            "description": "Delete a private network endpoint.",
+            "description": "Removed. Private networks and endpoints are managed by the platform; enable private networking on the environment instead.",
             "args": [
               {
                 "name": "id",
@@ -21116,8 +21179,8 @@
                 "ofType": null
               }
             },
-            "isDeprecated": false,
-            "deprecationReason": null
+            "isDeprecated": true,
+            "deprecationReason": "Removed. Private networks and endpoints are managed by the platform; enable private networking on the environment instead."
           },
           {
             "name": "privateNetworkEndpointRename",
@@ -21180,7 +21243,7 @@
           },
           {
             "name": "privateNetworksForEnvironmentDelete",
-            "description": "Delete all private networks for an environment.",
+            "description": "Removed. Private networks and endpoints are managed by the platform; enable private networking on the environment instead.",
             "args": [
               {
                 "name": "environmentId",
@@ -21206,8 +21269,8 @@
                 "ofType": null
               }
             },
-            "isDeprecated": false,
-            "deprecationReason": null
+            "isDeprecated": true,
+            "deprecationReason": "Removed. Private networks and endpoints are managed by the platform; enable private networking on the environment instead."
           },
           {
             "name": "projectClaim",
@@ -33388,6 +33451,34 @@
             "deprecationReason": "Use workspaceId"
           },
           {
+            "name": "tracingEnabled",
+            "description": "Whether the project's services are traced by default. A service can override it with its own tracingEnabled.",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": "Boolean",
+                "kind": "SCALAR",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "tracingSampleRate",
+            "description": "Fraction of client-facing requests the edge traces, 0..1. Null uses Railway's default.",
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "updatedAt",
             "description": null,
             "args": [],
@@ -36473,6 +36564,26 @@
             "type": {
               "kind": "SCALAR",
               "name": "Boolean",
+              "ofType": null
+            },
+            "defaultValue": null
+          },
+          {
+            "name": "tracingEnabled",
+            "description": "Trace the project's services by default: the edge records a span for each sampled request to their domains, and the next deploy configures each app's OpenTelemetry SDK to export to Railway. A service's own tracingEnabled overrides this.",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Boolean",
+              "ofType": null
+            },
+            "defaultValue": null
+          },
+          {
+            "name": "tracingSampleRate",
+            "description": "Fraction of client-facing requests the edge traces, 0..1, for every traced service in the project. Null resets to Railway's default.",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
               "ofType": null
             },
             "defaultValue": null
@@ -51862,6 +51973,18 @@
             "deprecationReason": null
           },
           {
+            "name": "tracingEnabled",
+            "description": "The service's tracing override: true or false pins it, null follows the project's tracingEnabled.",
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "Boolean",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "updatedAt",
             "description": null,
             "args": [],
@@ -53969,6 +54092,16 @@
             "type": {
               "kind": "SCALAR",
               "name": "String",
+              "ofType": null
+            },
+            "defaultValue": null
+          },
+          {
+            "name": "tracingEnabled",
+            "description": "Tracing override for the service: true or false pins it, null follows the project default. Takes effect at the edge within seconds and in the app on the next deploy.",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Boolean",
               "ofType": null
             },
             "defaultValue": null
@@ -58264,6 +58397,18 @@
             "deprecationReason": null
           },
           {
+            "name": "publishingRestrictionId",
+            "description": "The active restriction stopping this workspace publishing templates, so a restricted author can be sent to the page that explains it and takes the appeal. Null when publishing is not restricted, and for anyone but the template's owner: the `template` query is public, and whether a workspace is under an abuse restriction is not.",
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "readme",
             "description": null,
             "args": [],
@@ -58994,7 +59139,7 @@
           },
           {
             "name": "existingRootServiceId",
-            "description": "Use an existing service as the cluster root instead of creating a new one. Used for HA cluster conversion where an existing postgres becomes the primary.",
+            "description": "Use an existing service as the cluster root instead of creating a new one. A live cluster edge is resolved to the root it fronts. Used for HA cluster conversion where an existing postgres becomes the primary.",
             "type": {
               "kind": "SCALAR",
               "name": "String",
@@ -64215,6 +64360,30 @@
         "name": "WorkflowId",
         "description": null,
         "fields": [
+          {
+            "name": "archiveContinuityUnverifiedReason",
+            "description": "Why MySQL archive continuity could not be verified. The restore remains allowed and its image performs the authoritative replay check.",
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "archiveContinuityVerified",
+            "description": "For MySQL PITR restores, whether archive continuity was verified before the workflow started.",
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "Boolean",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
           {
             "name": "workflowId",
             "description": null,

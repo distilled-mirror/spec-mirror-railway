@@ -95,7 +95,9 @@ enum ActiveFeatureFlag {
   MAGIC_CONFIG
   MYSQL_PITR
   PRIORITY_BOARDING
+  RAILWAY_AGENT_DASHBOARD
   TEMPLATE_CHAT
+  TRACING
   USAGE_INSIGHTS
   VM_STORAGE_TRACES
 }
@@ -1284,6 +1286,7 @@ type EdgeConfig {
   overrides: JSON!
   purgeEpoch: Int!
   purgeEpochByKind: JSON!
+  tracing: EdgeTracingConfig
   underAttackModeUntil: Int
 }
 
@@ -1295,6 +1298,11 @@ type EdgeRuleDiagnostic {
   code: String!
   message: String!
   path: String!
+}
+
+type EdgeTracingConfig {
+  enabled: Boolean!
+  sampleRate: Float
 }
 
 type EgressGateway {
@@ -2484,20 +2492,28 @@ type Mutation {
   """Update the email preferences for a user"""
   preferencesUpdate(input: PreferencesUpdateData!): Preferences!
 
-  """Create or get a private network."""
-  privateNetworkCreateOrGet(input: PrivateNetworkCreateOrGetInput!): PrivateNetwork!
+  """
+  Removed. Private networks and endpoints are managed by the platform; enable private networking on the environment instead.
+  """
+  privateNetworkCreateOrGet(input: PrivateNetworkCreateOrGetInput!): PrivateNetwork! @deprecated(reason: "Removed. Private networks and endpoints are managed by the platform; enable private networking on the environment instead.")
 
-  """Create or get a private network endpoint."""
-  privateNetworkEndpointCreateOrGet(input: PrivateNetworkEndpointCreateOrGetInput!): PrivateNetworkEndpoint!
+  """
+  Removed. Private networks and endpoints are managed by the platform; enable private networking on the environment instead.
+  """
+  privateNetworkEndpointCreateOrGet(input: PrivateNetworkEndpointCreateOrGetInput!): PrivateNetworkEndpoint! @deprecated(reason: "Removed. Private networks and endpoints are managed by the platform; enable private networking on the environment instead.")
 
-  """Delete a private network endpoint."""
-  privateNetworkEndpointDelete(id: String!): Boolean!
+  """
+  Removed. Private networks and endpoints are managed by the platform; enable private networking on the environment instead.
+  """
+  privateNetworkEndpointDelete(id: String!): Boolean! @deprecated(reason: "Removed. Private networks and endpoints are managed by the platform; enable private networking on the environment instead.")
 
   """Rename a private network endpoint."""
   privateNetworkEndpointRename(dnsName: String!, id: String!, privateNetworkId: String!): Boolean!
 
-  """Delete all private networks for an environment."""
-  privateNetworksForEnvironmentDelete(environmentId: String!): Boolean!
+  """
+  Removed. Private networks and endpoints are managed by the platform; enable private networking on the environment instead.
+  """
+  privateNetworksForEnvironmentDelete(environmentId: String!): Boolean! @deprecated(reason: "Removed. Private networks and endpoints are managed by the platform; enable private networking on the environment instead.")
 
   """Claims a project."""
   projectClaim(id: String!, workspaceId: String!): Project!
@@ -3772,6 +3788,16 @@ type Project implements Node {
   subscriptionType: SubscriptionPlanType!
   team: Team @deprecated(reason: "Use workspace")
   teamId: String @deprecated(reason: "Use workspaceId")
+
+  """
+  Whether the project's services are traced by default. A service can override it with its own tracingEnabled.
+  """
+  tracingEnabled: Boolean!
+
+  """
+  Fraction of client-facing requests the edge traces, 0..1. Null uses Railway's default.
+  """
+  tracingSampleRate: Float
   updatedAt: DateTime!
 
   """
@@ -4113,6 +4139,16 @@ input ProjectUpdateInput {
   isPublic: Boolean
   name: String
   prDeploys: Boolean
+
+  """
+  Trace the project's services by default: the edge records a span for each sampled request to their domains, and the next deploy configures each app's OpenTelemetry SDK to export to Railway. A service's own tracingEnabled overrides this.
+  """
+  tracingEnabled: Boolean
+
+  """
+  Fraction of client-facing requests the edge traces, 0..1, for every traced service in the project. Null resets to Railway's default.
+  """
+  tracingSampleRate: Float
 }
 
 enum ProjectUsageProperty {
@@ -5972,6 +6008,11 @@ type Service implements Node {
   templateId: String
   templateServiceId: String
   templateThreadSlug: String
+
+  """
+  The service's tracing override: true or false pins it, null follows the project's tracingEnabled.
+  """
+  tracingEnabled: Boolean
   updatedAt: DateTime!
 }
 
@@ -6218,6 +6259,11 @@ input ServiceSourceInput {
 input ServiceUpdateInput {
   icon: String
   name: String
+
+  """
+  Tracing override for the service: true or false pins it, null follows the project default. Takes effect at the edge within seconds and in the app on the next deploy.
+  """
+  tracingEnabled: Boolean
 }
 
 type Session implements Node {
@@ -6731,6 +6777,11 @@ type Template implements Node {
   metadata: TemplateMetadata! @deprecated(reason: "Deprecated in favor of listing the fields individually.")
   name: String!
   projects: Int!
+
+  """
+  The active restriction stopping this workspace publishing templates, so a restricted author can be sent to the page that explains it and takes the appeal. Null when publishing is not restricted, and for anyone but the template's owner: the `template` query is public, and whether a workspace is under an abuse restriction is not.
+  """
+  publishingRestrictionId: String
   readme: String
   recentProjects: Int!
   serializedConfig: SerializedTemplateConfig
@@ -6809,7 +6860,7 @@ input TemplateDeployV2Input {
   environmentId: String
 
   """
-  Use an existing service as the cluster root instead of creating a new one. Used for HA cluster conversion where an existing postgres becomes the primary.
+  Use an existing service as the cluster root instead of creating a new one. A live cluster edge is resolved to the root it fronts. Used for HA cluster conversion where an existing postgres becomes the primary.
   """
   existingRootServiceId: String
   projectId: String
@@ -7374,6 +7425,15 @@ enum WithdrawalPlatformTypes {
 }
 
 type WorkflowId {
+  """
+  Why MySQL archive continuity could not be verified. The restore remains allowed and its image performs the authoritative replay check.
+  """
+  archiveContinuityUnverifiedReason: String
+
+  """
+  For MySQL PITR restores, whether archive continuity was verified before the workflow started.
+  """
+  archiveContinuityVerified: Boolean
   workflowId: String
 }
 
