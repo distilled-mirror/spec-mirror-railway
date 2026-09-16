@@ -85,6 +85,7 @@ enum ActiveFeatureFlag {
   AGENT_BOOTSTRAPS
   AGENT_BYOK
   AGENT_CONNECTORS
+  BOT_CLOUD_AGENTS
   CHAT_SANDBOX
   CLOUD_AGENTS
   CLOUD_AGENT_CHAT
@@ -130,6 +131,7 @@ enum ActivePlatformFlag {
   NUDGE_BACKUP_SCHEDULE_MISSING
   NUDGE_PUBLIC_DB_URL_WITHIN_PROJECT
   NUDGE_RESUBSCRIBE_AFTER_DEAD_INVOICE
+  NUDGE_UPGRADE_TO_PRO
   OAUTH_DCR_KILLSWITCH
   PRE_DEPLOY_TIMEOUT_KILLSWITCH
   PROJECT_HISTORY_DUAL_WRITE
@@ -606,6 +608,25 @@ type CloudAgentDomain {
 
   """Label prefix the machine declared, e.g. app."""
   prefix: String!
+}
+
+input CloudAgentFeedbackInput {
+  activeTools: [String!]!
+  agentVersion: String!
+  cloudAgentId: String!
+  description: String!
+  elapsedMs: Float
+  lastProgressAgeMs: Float
+  model: String!
+  reportId: String!
+  reportedAtMs: Float!
+  runId: String
+  runStartedAtMs: Float
+  sessionId: String!
+  sessionName: String
+  state: String!
+  steps: Int!
+  tuiVersion: String!
 }
 
 """The state of one coding agent session in a cloud agent."""
@@ -2188,6 +2209,11 @@ type Mutation {
   """Delete a cloud agent."""
   cloudAgentDelete(id: ID!): Boolean!
 
+  """
+  Send lightweight agent feedback to Railway. Returns the report ID after delivery.
+  """
+  cloudAgentFeedbackCreate(input: CloudAgentFeedbackInput!): String!
+
   """Duplicate a running cloud agent."""
   cloudAgentFork(id: ID!, name: String, variables: JSON): CloudAgent!
 
@@ -3579,6 +3605,7 @@ enum PlatformFeatureFlag {
   NUDGE_BACKUP_SCHEDULE_MISSING
   NUDGE_PUBLIC_DB_URL_WITHIN_PROJECT
   NUDGE_RESUBSCRIBE_AFTER_DEAD_INVOICE
+  NUDGE_UPGRADE_TO_PRO
   OAUTH_DCR_KILLSWITCH
   PRE_DEPLOY_TIMEOUT_KILLSWITCH
   PROJECT_HISTORY_DUAL_WRITE
