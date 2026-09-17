@@ -1246,12 +1246,6 @@
             "deprecationReason": null
           },
           {
-            "name": "PROJECT_HISTORY_READ_FROM_CH",
-            "description": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "REMOVE_DEPLOYMENT_COMPACT",
             "description": null,
             "isDeprecated": false,
@@ -31241,12 +31235,6 @@
             "deprecationReason": null
           },
           {
-            "name": "PROJECT_HISTORY_READ_FROM_CH",
-            "description": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "REMOVE_DEPLOYMENT_COMPACT",
             "description": null,
             "isDeprecated": false,
@@ -37496,6 +37484,22 @@
           },
           {
             "name": "totalUsers",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": "Int",
+                "kind": "SCALAR",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "totalVmsLastMonth",
             "description": null,
             "args": [],
             "type": {
