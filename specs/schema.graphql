@@ -139,6 +139,7 @@ enum ActivePlatformFlag {
   SERVICEINSTANCE_DATALOADER_FOR_STATIC_URL
   SPLIT_USAGE_QUERIES
   SSH_ANON_PROVISIONING
+  SSH_TRIAL_GUEST_IDLE_SLEEP
   STRIPE_INTERACTIVE_SUBSCRIPTION_ON_SESSION
   STRIPE_METERS_NEW_ACCOUNTS
   STRIPE_METERS_SHADOW_ENABLED
@@ -159,6 +160,7 @@ enum ActiveServiceFeatureFlag {
   ENABLE_DOCKER_EXTENSION
   PLACEHOLDER
   SKIPPED_BUILDS
+  USE_DEPLOYMENT_VMS
   USE_VM_RUNTIME
 }
 
@@ -3612,6 +3614,7 @@ enum PlatformFeatureFlag {
   SERVICEINSTANCE_DATALOADER_FOR_STATIC_URL
   SPLIT_USAGE_QUERIES
   SSH_ANON_PROVISIONING
+  SSH_TRIAL_GUEST_IDLE_SLEEP
   STRIPE_INTERACTIVE_SUBSCRIPTION_ON_SESSION
   STRIPE_METERS_NEW_ACCOUNTS
   STRIPE_METERS_SHADOW_ENABLED
@@ -6009,6 +6012,10 @@ input SandboxTemplateInput {
 scalar SerializedTemplateConfig
 
 type Service implements Node {
+  """
+  Best-effort automatic tracing: Railway instruments the service's processes with eBPF (OBI) for supported runtimes, without code changes. Only active while the service's tracing is on.
+  """
+  autoInstrumentationEnabled: Boolean!
   createdAt: DateTime!
   deletedAt: DateTime
   deployments(after: String, before: String, first: Int, last: Int): ServiceDeploymentsConnection! @deprecated(reason: "Use environment.deployments for properly scoped access control")
@@ -6283,6 +6290,10 @@ input ServiceSourceInput {
 }
 
 input ServiceUpdateInput {
+  """
+  Instrument the service's processes with eBPF (OBI) while its tracing is on. Reaches running containers within about a minute, no redeploy needed.
+  """
+  autoInstrumentationEnabled: Boolean
   icon: String
   name: String
 
@@ -6849,6 +6860,7 @@ input TemplateDeployInput {
 }
 
 type TemplateDeployPayload {
+  operationId: String
   projectId: String!
   workflowId: String
 }
