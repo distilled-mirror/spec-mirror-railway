@@ -160,6 +160,7 @@ enum ActivePlatformFlag {
 
 enum ActiveProjectFeatureFlag {
   PLACEHOLDER
+  RBS_VOLUMES
 }
 
 enum ActiveServiceFeatureFlag {
