@@ -102,7 +102,6 @@ enum ActiveFeatureFlag {
   MYSQL_PITR
   PRIORITY_BOARDING
   RAILWAY_AGENT_DASHBOARD
-  TEMPLATE_CHAT
   TRACING
   USAGE_INSIGHTS
   VM_STORAGE_TRACES
@@ -139,6 +138,7 @@ enum ActivePlatformFlag {
   NUDGE_RESUBSCRIBE_AFTER_DEAD_INVOICE
   NUDGE_UPGRADE_TO_PRO
   OAUTH_DCR_KILLSWITCH
+  ORCHESTRATOR_ARCHIVE_UPLOAD
   ORCHESTRATOR_BUILD_SERVICE_RPC
   PRE_DEPLOY_TIMEOUT_KILLSWITCH
   PROJECT_HISTORY_DUAL_WRITE
@@ -1890,6 +1890,14 @@ type HttpMetricsSample {
   value: Float!
 }
 
+type IacPartialOwnershipResult {
+  """Resource addresses whose ownership changed."""
+  affectedResources: [String!]!
+
+  """The environment's complete ownership map after the change."""
+  iacPartials: JSON!
+}
+
 type Incident {
   createdAt: DateTime
   id: String!
@@ -2381,6 +2389,41 @@ type Mutation {
 
   """Deletes an environment."""
   environmentDelete(id: String!): Boolean!
+
+  """
+  Release resources from a named IaC partial without deleting, redeploying, or changing them. Omit resources to release the entire partial. Whole-project management is possible once no named partials remain. A later named-partial apply can claim released resources again.
+  """
+  environmentIacPartialRelease(
+    """
+    Snapshot token from Environment.configEtag the ownership preview was computed against. When set, the release is rejected if the environment has changed since.
+    """
+    baseConfigEtag: String
+    environmentId: String!
+    partial: String!
+
+    """
+    Resource addresses to release (for example service.api). Every address must belong to the named partial. Omit to release all of its resources; an empty list is rejected.
+    """
+    resources: [String!]
+  ): IacPartialOwnershipResult!
+
+  """
+  Transfer resources between named IaC partials without deleting, redeploying, or changing them. Omit resources to transfer the entire source partial. The destination may be a new or existing partial.
+  """
+  environmentIacPartialTransfer(
+    """
+    Snapshot token from Environment.configEtag the ownership preview was computed against. When set, the transfer is rejected if the environment has changed since.
+    """
+    baseConfigEtag: String
+    environmentId: String!
+    fromPartial: String!
+
+    """
+    Resource addresses to transfer (for example service.api). Every address must belong to fromPartial. Omit to transfer all of its resources; an empty list is rejected.
+    """
+    resources: [String!]
+    toPartial: String!
+  ): IacPartialOwnershipResult!
 
   """Commit the provided patch to the environment."""
   environmentPatchCommit(commitMessage: String, environmentId: String!, patch: EnvironmentConfig): String!
@@ -3617,6 +3660,7 @@ enum PlatformFeatureFlag {
   NUDGE_RESUBSCRIBE_AFTER_DEAD_INVOICE
   NUDGE_UPGRADE_TO_PRO
   OAUTH_DCR_KILLSWITCH
+  ORCHESTRATOR_ARCHIVE_UPLOAD
   ORCHESTRATOR_BUILD_SERVICE_RPC
   PRE_DEPLOY_TIMEOUT_KILLSWITCH
   PROJECT_HISTORY_DUAL_WRITE

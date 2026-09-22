@@ -1055,12 +1055,6 @@
             "deprecationReason": null
           },
           {
-            "name": "TEMPLATE_CHAT",
-            "description": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "TRACING",
             "description": null,
             "isDeprecated": false,
@@ -1265,6 +1259,12 @@
           },
           {
             "name": "OAUTH_DCR_KILLSWITCH",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "ORCHESTRATOR_ARCHIVE_UPLOAD",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
@@ -15730,6 +15730,57 @@
       },
       {
         "kind": "OBJECT",
+        "name": "IacPartialOwnershipResult",
+        "description": null,
+        "fields": [
+          {
+            "name": "affectedResources",
+            "description": "Resource addresses whose ownership changed.",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": null,
+                "kind": "LIST",
+                "ofType": {
+                  "name": null,
+                  "kind": "NON_NULL",
+                  "ofType": {
+                    "name": "String",
+                    "kind": "SCALAR",
+                    "ofType": null
+                  }
+                }
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "iacPartials",
+            "description": "The environment's complete ownership map after the change.",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": "JSON",
+                "kind": "SCALAR",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "OBJECT",
         "name": "Incident",
         "description": null,
         "fields": [
@@ -19893,6 +19944,166 @@
               "ofType": {
                 "name": "Boolean",
                 "kind": "SCALAR",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "environmentIacPartialRelease",
+            "description": "Release resources from a named IaC partial without deleting, redeploying, or changing them. Omit resources to release the entire partial. Whole-project management is possible once no named partials remain. A later named-partial apply can claim released resources again.",
+            "args": [
+              {
+                "name": "baseConfigEtag",
+                "description": "Snapshot token from Environment.configEtag the ownership preview was computed against. When set, the release is rejected if the environment has changed since.",
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                },
+                "defaultValue": null
+              },
+              {
+                "name": "environmentId",
+                "description": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "name": "String",
+                    "kind": "SCALAR",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null
+              },
+              {
+                "name": "partial",
+                "description": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "name": "String",
+                    "kind": "SCALAR",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null
+              },
+              {
+                "name": "resources",
+                "description": "Resource addresses to release (for example service.api). Every address must belong to the named partial. Omit to release all of its resources; an empty list is rejected.",
+                "type": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "name": null,
+                    "kind": "NON_NULL",
+                    "ofType": {
+                      "name": "String",
+                      "kind": "SCALAR",
+                      "ofType": null
+                    }
+                  }
+                },
+                "defaultValue": null
+              }
+            ],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": "IacPartialOwnershipResult",
+                "kind": "OBJECT",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "environmentIacPartialTransfer",
+            "description": "Transfer resources between named IaC partials without deleting, redeploying, or changing them. Omit resources to transfer the entire source partial. The destination may be a new or existing partial.",
+            "args": [
+              {
+                "name": "baseConfigEtag",
+                "description": "Snapshot token from Environment.configEtag the ownership preview was computed against. When set, the transfer is rejected if the environment has changed since.",
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                },
+                "defaultValue": null
+              },
+              {
+                "name": "environmentId",
+                "description": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "name": "String",
+                    "kind": "SCALAR",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null
+              },
+              {
+                "name": "fromPartial",
+                "description": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "name": "String",
+                    "kind": "SCALAR",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null
+              },
+              {
+                "name": "resources",
+                "description": "Resource addresses to transfer (for example service.api). Every address must belong to fromPartial. Omit to transfer all of its resources; an empty list is rejected.",
+                "type": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "name": null,
+                    "kind": "NON_NULL",
+                    "ofType": {
+                      "name": "String",
+                      "kind": "SCALAR",
+                      "ofType": null
+                    }
+                  }
+                },
+                "defaultValue": null
+              },
+              {
+                "name": "toPartial",
+                "description": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "name": "String",
+                    "kind": "SCALAR",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null
+              }
+            ],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": "IacPartialOwnershipResult",
+                "kind": "OBJECT",
                 "ofType": null
               }
             },
@@ -31284,6 +31495,12 @@
           },
           {
             "name": "OAUTH_DCR_KILLSWITCH",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "ORCHESTRATOR_ARCHIVE_UPLOAD",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
