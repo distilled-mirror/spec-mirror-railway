@@ -90,18 +90,22 @@ enum ActiveFeatureFlag {
   AGENT_BYOK_OPENAI
   AGENT_BYOK_OPENROUTER
   AGENT_CONNECTORS
+  AGENT_TASKS
   BOT_CLOUD_AGENTS
   CHAT_SANDBOX
   CLOUD_AGENTS
+  CLOUD_AGENT_BUILDER
   CLOUD_AGENT_CHAT
   CS_MCP_EXPRESS
   DEBUG_SMART_DIAGNOSIS
   EMAIL_FORWARDING
+  HA_FOR_MONGO
   IN_DASHBOARD_SUPPORT
   MAGIC_CONFIG
   MYSQL_PITR
   PRIORITY_BOARDING
   RAILWAY_AGENT_DASHBOARD
+  RAILWAY_AGENT_FEED
   TRACING
   USAGE_INSIGHTS
   VM_STORAGE_TRACES
@@ -607,6 +611,11 @@ input CloudAgentCreateInput {
   variables: JSON
 }
 
+type CloudAgentDeployResult {
+  deploymentId: String!
+  serviceId: String!
+}
+
 """One public domain on an agent's machine."""
 type CloudAgentDomain {
   """Resolved FQDN."""
@@ -738,6 +747,99 @@ enum CloudAgentStatus {
   RUNNING
   SLEEPING
   STARTING
+}
+
+"""
+Task lifecycle and correlation. Read cloudAgentTask for the latest session response.
+"""
+type CloudAgentTask {
+  cloudAgentId: ID
+  completedAt: DateTime
+  createdAt: DateTime!
+  createdVia: CloudAgentTaskVia!
+  error: String
+  externalRef: String
+  id: ID!
+  metadata: JSON
+  promptPreview: String
+  requestedByUserId: ID
+  sessionId: String
+  startedAt: DateTime
+  status: CloudAgentTaskStatus!
+}
+
+input CloudAgentTaskDispatchInput {
+  agentName: String
+
+  """Explicit agent reuse. Omit all targets to create a fresh agent."""
+  cloudAgentId: String
+  environmentId: String!
+  externalRef: String
+  idempotencyKey: String
+  metadata: JSON
+  mode: CloudAgentTaskMode
+
+  """JSON Schema object for structured output; requires PROMPT mode."""
+  outputSchema: JSON
+  projectId: String!
+  prompt: String!
+
+  """
+  Continue this task's original agent/session. Mutually exclusive with cloudAgentId/sessionId.
+  """
+  replyToTaskId: String
+
+  """Existing session to continue; requires cloudAgentId."""
+  sessionId: String
+  source: CloudAgentSourceInput
+  webhookSecret: String
+  webhookUrl: String
+}
+
+type CloudAgentTaskHandle {
+  cloudAgentId: ID!
+  replayed: Boolean!
+  sessionId: String!
+  status: CloudAgentTaskStatus!
+  taskId: ID!
+}
+
+enum CloudAgentTaskMode {
+  FOLLOW_UP
+  PROMPT
+  STEER
+}
+
+type CloudAgentTaskPage {
+  nextCursor: String
+  tasks: [CloudAgentTask!]!
+}
+
+type CloudAgentTaskResult {
+  cloudAgentId: ID!
+  completedAt: String
+  error: String
+  externalRef: String
+  metadata: JSON
+  sessionId: String!
+  sessionState: String
+  status: CloudAgentTaskStatus!
+  structuredOutput: JSON
+  taskId: ID!
+  text: String
+}
+
+enum CloudAgentTaskStatus {
+  AWAITING_INPUT
+  COMPLETED
+  FAILED
+  PENDING
+  RUNNING
+}
+
+enum CloudAgentTaskVia {
+  API
+  MCP
 }
 
 type CnameCheck {
@@ -2227,6 +2329,11 @@ type Mutation {
   cloudAgentDelete(id: ID!): Boolean!
 
   """
+  Build the agent's code inside its own VM and deploy it. Creates the named service (default: the agent's name) or reuses it. Needs an agent booted with the builder.
+  """
+  cloudAgentDeploy(id: ID!, path: String, serviceName: String): CloudAgentDeployResult!
+
+  """
   Send lightweight agent feedback to Railway. Returns the report ID after delivery.
   """
   cloudAgentFeedbackCreate(input: CloudAgentFeedbackInput!): String!
@@ -2246,6 +2353,14 @@ type Mutation {
 
   """Report the current coding-agent session state."""
   cloudAgentStateReport(input: CloudAgentStateReportInput!): Boolean!
+
+  """
+  Start a task and return its handle. Creates a fresh agent by default; replyToTaskId continues the original conversation.
+  """
+  cloudAgentTaskDispatch(input: CloudAgentTaskDispatchInput!): CloudAgentTaskHandle!
+
+  """Recover the latest task response from the agent. May wake the VM."""
+  cloudAgentTaskRecover(cloudAgentId: String!, sessionId: String!): CloudAgentTaskResult!
 
   """Wake a sleeping cloud agent."""
   cloudAgentWake(id: ID!): CloudAgent!
@@ -2426,7 +2541,14 @@ type Mutation {
   ): IacPartialOwnershipResult!
 
   """Commit the provided patch to the environment."""
-  environmentPatchCommit(commitMessage: String, environmentId: String!, patch: EnvironmentConfig): String!
+  environmentPatchCommit(
+    commitMessage: String
+    environmentId: String!
+    patch: EnvironmentConfig
+
+    """Skip deploys for services affected by this patch."""
+    skipDeploys: Boolean
+  ): String!
 
   """Commits the staged changes for a single environment."""
   environmentPatchCommitStaged(
@@ -4402,6 +4524,12 @@ type Query {
   """
   cloudAgentConsoleSessions(after: String, before: String, cloudAgentId: ID!, first: Int, last: Int): QueryCloudAgentConsoleSessionsConnection
 
+  """Read the latest task on an agent/session without waking the VM."""
+  cloudAgentTask(cloudAgentId: String!, sessionId: String!): CloudAgentTaskResult!
+
+  """List task lifecycle records in an environment, newest first."""
+  cloudAgentTasks(cursor: String, environmentId: String!, limit: Int, status: CloudAgentTaskStatus): CloudAgentTaskPage!
+
   """Cloud agents in an environment."""
   cloudAgents(
     environmentId: ID!
@@ -5109,6 +5237,49 @@ type Query {
 
   """Count all published templates."""
   templatesCount: Int!
+
+  """
+  The spans of one trace, oldest first. Only spans belonging to the environment are returned
+  """
+  trace(
+    environmentId: String!
+
+    """Spans returned (defaults 1000, max 2000)"""
+    maxSpans: Int
+
+    """W3C trace id, 32 hex characters"""
+    traceId: String!
+  ): [TraceSpan!]!
+
+  """
+  Traces of an environment with at least one span matching the filter, newest first
+  """
+  traces(
+    """Latest span start to consider (ISO); defaults to now"""
+    endDate: String
+    environmentId: String!
+
+    """
+    Filter expression over spans, e.g. @status:error @component:edge @duration:>500 @http.route:/api/users. Built-in fields: trace, span, name, serviceName, service, deployment, replica, component, kind, status, duration (ms). Any other @key looks the key up in the span and resource attributes; free text matches the span name. Prefix a term with - to exclude it.
+    """
+    filter: String
+
+    """Traces returned (defaults 100, max 500)"""
+    limit: Int
+
+    """Only traces with a span from this Railway service (optional)"""
+    serviceId: String
+
+    """
+    Oldest span start to consider (ISO). Clamped to the project's retention; defaults to one hour ago
+    """
+    startDate: String
+  ): [TraceSummary!]!
+
+  """
+  Span activity per service of an environment within retention; a service absent from the list has produced no spans at all
+  """
+  tracingStatus(environmentId: String!): [ServiceTracingStatus!]!
 
   """Get all trusted domains for a workspace"""
   trustedDomains(after: String, before: String, first: Int, last: Int, workspaceId: String!): QueryTrustedDomainsConnection!
@@ -6342,6 +6513,22 @@ input ServiceSourceInput {
   repo: String
 }
 
+"""
+Whether a service's requests are producing spans, per exporting hop. The edge tracing a request says nothing about the app behind it.
+"""
+type ServiceTracingStatus {
+  """
+  When the edge last exported a span for a request to the service; null when it never has within retention
+  """
+  lastEdgeSpanAt: DateTime
+
+  """
+  When the service's own app last exported a span; null when it never has within retention
+  """
+  lastServiceSpanAt: DateTime
+  serviceId: String!
+}
+
 input ServiceUpdateInput {
   """
   Instrument the service's processes with eBPF (OBI) while its tracing is on. Reaches running containers within about a minute, no redeploy needed.
@@ -7067,6 +7254,108 @@ enum TemplateStatus {
 }
 
 scalar TemplateVolume
+
+"""One span of a trace"""
+type TraceSpan {
+  """Which hop exported the span: edge, proxy or service"""
+  component: String!
+  deploymentId: String
+  deploymentInstanceId: String
+  durationMs: Float!
+  events: [TraceSpanEvent!]!
+
+  """INTERNAL, SERVER, CLIENT, PRODUCER, CONSUMER or UNSPECIFIED"""
+  kind: String!
+  links: [TraceSpanLink!]!
+  name: String!
+
+  """Absent on a root span"""
+  parentSpanId: String
+
+  """
+  Resource attributes as exported, without the railway.* keys Railway promotes into typed fields
+  """
+  resourceAttributes: JSON!
+
+  """Railway service the span belongs to, when known"""
+  serviceId: String
+
+  """The exporter's service.name resource attribute"""
+  serviceName: String!
+  spanAttributes: JSON!
+
+  """16 lower-case hex characters"""
+  spanId: String!
+
+  """ISO timestamp"""
+  startedAt: String!
+
+  """UNSET, OK or ERROR"""
+  statusCode: String!
+  statusMessage: String!
+  traceId: String!
+}
+
+"""A timestamped event on a span"""
+type TraceSpanEvent {
+  attributes: JSON!
+  name: String!
+  timestamp: String!
+}
+
+"""A link from a span to a span in another trace"""
+type TraceSpanLink {
+  spanId: String!
+  traceId: String!
+}
+
+"""
+One trace of an environment: the request as a whole, summarised from its spans
+"""
+type TraceSummary {
+  """From the earliest span start to the latest span end"""
+  durationMs: Float!
+
+  """Spans with an error status"""
+  errorCount: Int!
+
+  """Whether the edge exported any span of the trace"""
+  hasEdge: Boolean!
+
+  """
+  Which hop exported the root span: edge (hikari), proxy (tcp-proxy) or service
+  """
+  rootComponent: String!
+
+  """The root span's server.address, when it set one"""
+  rootServerAddress: String
+
+  """Railway service the root span belongs to"""
+  rootServiceId: String!
+
+  """The root span's service.name"""
+  rootServiceName: String!
+
+  """
+  Name of the root span, or of the earliest span when the root is missing
+  """
+  rootSpanName: String!
+
+  """The root span's url.path, when it set one"""
+  rootUrlPath: String
+
+  """
+  service.name of the earliest span a service exported; null when the request never reached one
+  """
+  serviceName: String
+  spanCount: Int!
+
+  """Start of the earliest span (ISO timestamp)"""
+  startedAt: String!
+
+  """W3C trace id, 32 lower-case hex characters"""
+  traceId: String!
+}
 
 type TrustedDomain {
   domainName: String!
