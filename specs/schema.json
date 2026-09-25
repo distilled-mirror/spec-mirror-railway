@@ -1025,12 +1025,6 @@
             "deprecationReason": null
           },
           {
-            "name": "DEBUG_SMART_DIAGNOSIS",
-            "description": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "EMAIL_FORWARDING",
             "description": null,
             "isDeprecated": false,
@@ -1062,6 +1056,12 @@
           },
           {
             "name": "PRIORITY_BOARDING",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "RAILWAY_AGENT_ATTACHMENTS",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
@@ -1283,18 +1283,6 @@
           },
           {
             "name": "OAUTH_DCR_KILLSWITCH",
-            "description": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "ORCHESTRATOR_ARCHIVE_UPLOAD",
-            "description": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "ORCHESTRATOR_BUILD_SERVICE_RPC",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
@@ -5205,6 +5193,49 @@
       },
       {
         "kind": "OBJECT",
+        "name": "CloudAgentRepository",
+        "description": null,
+        "fields": [
+          {
+            "name": "path",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": "String",
+                "kind": "SCALAR",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "repo",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": "String",
+                "kind": "SCALAR",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "OBJECT",
         "name": "CloudAgentSnapshot",
         "description": "The state of one coding agent session in a cloud agent.",
         "fields": [
@@ -5523,6 +5554,18 @@
             "deprecationReason": null
           },
           {
+            "name": "dir",
+            "description": "Selected checkout directory; null means /app.",
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "repo",
             "description": "owner/repo.",
             "args": [],
@@ -5533,6 +5576,26 @@
                 "name": "String",
                 "kind": "SCALAR",
                 "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "repos",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "LIST",
+              "name": null,
+              "ofType": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                  "name": "CloudAgentRepository",
+                  "kind": "OBJECT",
+                  "ofType": null
+                }
               }
             },
             "isDeprecated": false,
@@ -32445,18 +32508,6 @@
           },
           {
             "name": "OAUTH_DCR_KILLSWITCH",
-            "description": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "ORCHESTRATOR_ARCHIVE_UPLOAD",
-            "description": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "ORCHESTRATOR_BUILD_SERVICE_RPC",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null

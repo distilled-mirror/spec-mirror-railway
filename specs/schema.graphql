@@ -97,13 +97,13 @@ enum ActiveFeatureFlag {
   CLOUD_AGENT_BUILDER
   CLOUD_AGENT_CHAT
   CS_MCP_EXPRESS
-  DEBUG_SMART_DIAGNOSIS
   EMAIL_FORWARDING
   HA_FOR_MONGO
   IN_DASHBOARD_SUPPORT
   MAGIC_CONFIG
   MYSQL_PITR
   PRIORITY_BOARDING
+  RAILWAY_AGENT_ATTACHMENTS
   RAILWAY_AGENT_DASHBOARD
   RAILWAY_AGENT_FEED
   TRACING
@@ -142,8 +142,6 @@ enum ActivePlatformFlag {
   NUDGE_RESUBSCRIBE_AFTER_DEAD_INVOICE
   NUDGE_UPGRADE_TO_PRO
   OAUTH_DCR_KILLSWITCH
-  ORCHESTRATOR_ARCHIVE_UPLOAD
-  ORCHESTRATOR_BUILD_SERVICE_RPC
   PRE_DEPLOY_TIMEOUT_KILLSWITCH
   PROJECT_HISTORY_DUAL_WRITE
   REMOVE_DEPLOYMENT_COMPACT
@@ -647,6 +645,11 @@ input CloudAgentFeedbackInput {
   tuiVersion: String!
 }
 
+type CloudAgentRepository {
+  path: String!
+  repo: String!
+}
+
 """The state of one coding agent session in a cloud agent."""
 type CloudAgentSnapshot {
   harness: String!
@@ -700,8 +703,12 @@ type CloudAgentSource {
   """Requested ref; null = the repo's default branch."""
   branch: String
 
+  """Selected checkout directory; null means /app."""
+  dir: String
+
   """owner/repo."""
   repo: String!
+  repos: [CloudAgentRepository!]
 
   """Service the repo was resolved from, when given."""
   serviceId: String
@@ -3782,8 +3789,6 @@ enum PlatformFeatureFlag {
   NUDGE_RESUBSCRIBE_AFTER_DEAD_INVOICE
   NUDGE_UPGRADE_TO_PRO
   OAUTH_DCR_KILLSWITCH
-  ORCHESTRATOR_ARCHIVE_UPLOAD
-  ORCHESTRATOR_BUILD_SERVICE_RPC
   PRE_DEPLOY_TIMEOUT_KILLSWITCH
   PROJECT_HISTORY_DUAL_WRITE
   REMOVE_DEPLOYMENT_COMPACT
