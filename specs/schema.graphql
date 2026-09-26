@@ -103,7 +103,6 @@ enum ActiveFeatureFlag {
   MAGIC_CONFIG
   MYSQL_PITR
   PRIORITY_BOARDING
-  RAILWAY_AGENT_ATTACHMENTS
   RAILWAY_AGENT_DASHBOARD
   RAILWAY_AGENT_FEED
   TRACING
@@ -114,6 +113,7 @@ enum ActiveFeatureFlag {
 enum ActivePlatformFlag {
   AGENT_USAGE_CH_INGEST
   ALERT_SUS_USERS_CRON_KILLSWITCH
+  BUILDER_V4_ROLLOUT
   BUILD_DEPLOY_QUEUE_V2
   CAC_T0_KILLSWITCH
   CANVAS_CROSS_ENV_GUARD_ENFORCE
@@ -166,12 +166,11 @@ enum ActiveProjectFeatureFlag {
 }
 
 enum ActiveServiceFeatureFlag {
+  BUILDER_V4
   COPY_VOLUME_TO_ENVIRONMENT
-  ENABLE_DOCKER_EXTENSION
   PLACEHOLDER
   SKIPPED_BUILDS
   USE_DEPLOYMENT_VMS
-  USE_VM_RUNTIME
 }
 
 type AdoptionInfo implements Node {
@@ -2338,7 +2337,16 @@ type Mutation {
   """
   Build the agent's code inside its own VM and deploy it. Creates the named service (default: the agent's name) or reuses it. Needs an agent booted with the builder.
   """
-  cloudAgentDeploy(id: ID!, path: String, serviceName: String): CloudAgentDeployResult!
+  cloudAgentDeploy(
+    id: ID!
+    path: String
+
+    """
+    Replicas per region, e.g. { "us-west2": 3 }. Saved on the service; omit to keep its current regions.
+    """
+    regions: JSON
+    serviceName: String
+  ): CloudAgentDeployResult!
 
   """
   Send lightweight agent feedback to Railway. Returns the report ID after delivery.
@@ -3761,6 +3769,7 @@ type PlanLimitOverride implements Node {
 enum PlatformFeatureFlag {
   AGENT_USAGE_CH_INGEST
   ALERT_SUS_USERS_CRON_KILLSWITCH
+  BUILDER_V4_ROLLOUT
   BUILD_DEPLOY_QUEUE_V2
   CAC_T0_KILLSWITCH
   CANVAS_CROSS_ENV_GUARD_ENFORCE

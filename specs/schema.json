@@ -1061,12 +1061,6 @@
             "deprecationReason": null
           },
           {
-            "name": "RAILWAY_AGENT_ATTACHMENTS",
-            "description": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "RAILWAY_AGENT_DASHBOARD",
             "description": null,
             "isDeprecated": false,
@@ -1115,6 +1109,12 @@
           },
           {
             "name": "ALERT_SUS_USERS_CRON_KILLSWITCH",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "BUILDER_V4_ROLLOUT",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
@@ -1418,13 +1418,13 @@
         "interfaces": null,
         "enumValues": [
           {
-            "name": "COPY_VOLUME_TO_ENVIRONMENT",
+            "name": "BUILDER_V4",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
           },
           {
-            "name": "ENABLE_DOCKER_EXTENSION",
+            "name": "COPY_VOLUME_TO_ENVIRONMENT",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
@@ -1443,12 +1443,6 @@
           },
           {
             "name": "USE_DEPLOYMENT_VMS",
-            "description": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "USE_VM_RUNTIME",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
@@ -19397,6 +19391,16 @@
                 "defaultValue": null
               },
               {
+                "name": "regions",
+                "description": "Replicas per region, e.g. { \"us-west2\": 3 }. Saved on the service; omit to keep its current regions.",
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "JSON",
+                  "ofType": null
+                },
+                "defaultValue": null
+              },
+              {
                 "name": "serviceName",
                 "description": null,
                 "type": {
@@ -32340,6 +32344,12 @@
           },
           {
             "name": "ALERT_SUS_USERS_CRON_KILLSWITCH",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "BUILDER_V4_ROLLOUT",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
