@@ -989,12 +989,6 @@
             "deprecationReason": null
           },
           {
-            "name": "BOT_CLOUD_AGENTS",
-            "description": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "CHAT_SANDBOX",
             "description": null,
             "isDeprecated": false,
@@ -1295,6 +1289,12 @@
           },
           {
             "name": "PROJECT_HISTORY_DUAL_WRITE",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "RADAR_HTTP_PATTERN_DETECTION",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
@@ -27495,8 +27495,36 @@
           },
           {
             "name": "webhookTest",
-            "description": "Test a webhook URL by sending a sample payload. Returns the HTTP status code.",
+            "description": "Test a webhook URL by sending a sample payload. Returns the HTTP status code. Custom headers come from `headers`, plus the stored headers of `notificationRuleId` for names not passed.",
             "args": [
+              {
+                "name": "headers",
+                "description": null,
+                "type": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "name": null,
+                    "kind": "NON_NULL",
+                    "ofType": {
+                      "name": "WebhookHeaderInput",
+                      "kind": "INPUT_OBJECT",
+                      "ofType": null
+                    }
+                  }
+                },
+                "defaultValue": null
+              },
+              {
+                "name": "notificationRuleId",
+                "description": null,
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                },
+                "defaultValue": null
+              },
               {
                 "name": "payload",
                 "description": null,
@@ -29034,7 +29062,7 @@
         "fields": [
           {
             "name": "config",
-            "description": null,
+            "description": "Webhook header values are write-only: the read side carries header names with null values.",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -32535,6 +32563,12 @@
             "deprecationReason": null
           },
           {
+            "name": "RADAR_HTTP_PATTERN_DETECTION",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "REMOVE_DEPLOYMENT_COMPACT",
             "description": null,
             "isDeprecated": false,
@@ -35018,7 +35052,7 @@
           },
           {
             "name": "tracingEnabled",
-            "description": "Whether the project's services are traced by default. A service can override it with its own tracingEnabled.",
+            "description": null,
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -35029,20 +35063,20 @@
                 "ofType": null
               }
             },
-            "isDeprecated": false,
-            "deprecationReason": null
+            "isDeprecated": true,
+            "deprecationReason": "Tracing is set per service instance: read ServiceInstance.tracingEnabled. True when any instance in the project is traced."
           },
           {
             "name": "tracingSampleRate",
-            "description": "Fraction of client-facing requests the edge traces, 0..1. Null uses Railway's default.",
+            "description": null,
             "args": [],
             "type": {
               "kind": "SCALAR",
               "name": "Float",
               "ofType": null
             },
-            "isDeprecated": false,
-            "deprecationReason": null
+            "isDeprecated": true,
+            "deprecationReason": "The edge traces every client-facing request; there is no sample rate. Always null."
           },
           {
             "name": "updatedAt",
@@ -38130,26 +38164,6 @@
             "type": {
               "kind": "SCALAR",
               "name": "Boolean",
-              "ofType": null
-            },
-            "defaultValue": null
-          },
-          {
-            "name": "tracingEnabled",
-            "description": "Trace the project's services by default: the edge records a span for each sampled request to their domains, and the next deploy configures each app's OpenTelemetry SDK to export to Railway. A service's own tracingEnabled overrides this.",
-            "type": {
-              "kind": "SCALAR",
-              "name": "Boolean",
-              "ofType": null
-            },
-            "defaultValue": null
-          },
-          {
-            "name": "tracingSampleRate",
-            "description": "Fraction of client-facing requests the edge traces, 0..1, for every traced service in the project. Null resets to Railway's default.",
-            "type": {
-              "kind": "SCALAR",
-              "name": "Float",
               "ofType": null
             },
             "defaultValue": null
@@ -53458,7 +53472,7 @@
         "fields": [
           {
             "name": "autoInstrumentationEnabled",
-            "description": "Best-effort automatic tracing: Railway instruments the service's processes with eBPF (OBI) for supported runtimes, without code changes. Only active while the service's tracing is on.",
+            "description": null,
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -53469,8 +53483,8 @@
                 "ofType": null
               }
             },
-            "isDeprecated": false,
-            "deprecationReason": null
+            "isDeprecated": true,
+            "deprecationReason": "Set per service instance: read ServiceInstance.autoInstrumentationEnabled. Reports the production environment's instance."
           },
           {
             "name": "createdAt",
@@ -53853,15 +53867,15 @@
           },
           {
             "name": "tracingEnabled",
-            "description": "The service's tracing override: true or false pins it, null follows the project's tracingEnabled.",
+            "description": null,
             "args": [],
             "type": {
               "kind": "SCALAR",
               "name": "Boolean",
               "ofType": null
             },
-            "isDeprecated": false,
-            "deprecationReason": null
+            "isDeprecated": true,
+            "deprecationReason": "Tracing is set per service instance: read ServiceInstance.tracingEnabled. Reports the production environment's instance."
           },
           {
             "name": "updatedAt",
@@ -54667,6 +54681,22 @@
             "deprecationReason": null
           },
           {
+            "name": "autoInstrumentationEnabled",
+            "description": "Instrument the service's processes with eBPF (OBI) for supported runtimes, no code changes. Only active while tracingEnabled is true.",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": "Boolean",
+                "kind": "SCALAR",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "buildCommand",
             "description": null,
             "args": [],
@@ -55147,6 +55177,22 @@
             "deprecationReason": null
           },
           {
+            "name": "tracingEnabled",
+            "description": "Trace requests to the service in this environment: the edge records a span per client-facing request to its domains and the next deploy provides the OpenTelemetry exporter variables.",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": "Boolean",
+                "kind": "SCALAR",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "updatedAt",
             "description": null,
             "args": [],
@@ -55435,6 +55481,16 @@
         "fields": null,
         "inputFields": [
           {
+            "name": "autoInstrumentationEnabled",
+            "description": "Instrument the service's processes with eBPF (OBI) while its tracing is on. Reaches running containers within about a minute, no redeploy needed.",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Boolean",
+              "ofType": null
+            },
+            "defaultValue": null
+          },
+          {
             "name": "buildCommand",
             "description": null,
             "type": {
@@ -55668,6 +55724,16 @@
             "type": {
               "kind": "SCALAR",
               "name": "String",
+              "ofType": null
+            },
+            "defaultValue": null
+          },
+          {
+            "name": "tracingEnabled",
+            "description": "Trace requests to the service in this environment. Takes effect at the edge within seconds and in the app on the next deploy.",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Boolean",
               "ofType": null
             },
             "defaultValue": null
@@ -56007,16 +56073,6 @@
         "fields": null,
         "inputFields": [
           {
-            "name": "autoInstrumentationEnabled",
-            "description": "Instrument the service's processes with eBPF (OBI) while its tracing is on. Reaches running containers within about a minute, no redeploy needed.",
-            "type": {
-              "kind": "SCALAR",
-              "name": "Boolean",
-              "ofType": null
-            },
-            "defaultValue": null
-          },
-          {
             "name": "icon",
             "description": null,
             "type": {
@@ -56032,16 +56088,6 @@
             "type": {
               "kind": "SCALAR",
               "name": "String",
-              "ofType": null
-            },
-            "defaultValue": null
-          },
-          {
-            "name": "tracingEnabled",
-            "description": "Tracing override for the service: true or false pins it, null follows the project default. Takes effect at the edge within seconds and in the app on the next deploy.",
-            "type": {
-              "kind": "SCALAR",
-              "name": "Boolean",
               "ofType": null
             },
             "defaultValue": null
@@ -66877,6 +66923,45 @@
         ],
         "inputFields": null,
         "interfaces": [],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "INPUT_OBJECT",
+        "name": "WebhookHeaderInput",
+        "description": null,
+        "fields": null,
+        "inputFields": [
+          {
+            "name": "name",
+            "description": null,
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": "String",
+                "kind": "SCALAR",
+                "ofType": null
+              }
+            },
+            "defaultValue": null
+          },
+          {
+            "name": "value",
+            "description": null,
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": "String",
+                "kind": "SCALAR",
+                "ofType": null
+              }
+            },
+            "defaultValue": null
+          }
+        ],
+        "interfaces": null,
         "enumValues": null,
         "possibleTypes": null
       },
