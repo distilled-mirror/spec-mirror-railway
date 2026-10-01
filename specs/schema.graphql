@@ -92,6 +92,7 @@ enum ActiveFeatureFlag {
   AGENT_CONNECTORS
   AGENT_TASKS
   CHAT_SANDBOX
+  CLEARANCE
   CLOUD_AGENTS
   CLOUD_AGENT_BUILDER
   CLOUD_AGENT_CHAT
@@ -2962,6 +2963,11 @@ type Mutation {
   Undo an active auto-update skip for a service instance, applied immediately (no config staging, no redeploy). The recurring maintenance window and update policy are untouched — the next scheduled occurrence fires normally again.
   """
   serviceInstanceAutoUpdateSnoozeClear(environmentId: String!, serviceId: String!): Boolean!
+
+  """
+  Turns Railway Authentication on or off for a service instance. Turning it on requires the Railway Authentication feature flag.
+  """
+  serviceInstanceClearanceUpdate(input: ServiceInstanceClearanceUpdateInput!): Boolean!
 
   """Deploy a service instance"""
   serviceInstanceDeploy(commitSha: String, environmentId: String!, latestCommit: Boolean, serviceId: String!): Boolean!
@@ -6377,6 +6383,11 @@ type ServiceInstance implements Node {
   autoInstrumentationEnabled: Boolean!
   buildCommand: String
   builder: Builder!
+
+  """
+  Whether Railway Authentication protects this service's HTTP domains. Null means no setting of its own.
+  """
+  clearance: Boolean
   createdAt: DateTime!
   cronSchedule: String
   deletedAt: DateTime
@@ -6446,6 +6457,13 @@ input ServiceInstanceAutoDeployUpdateInput {
 
 type ServiceInstanceAutoDeployUpdateResult {
   enabled: Boolean!
+}
+
+input ServiceInstanceClearanceUpdateInput {
+  enabled: Boolean!
+  environmentId: String!
+  projectId: String!
+  serviceId: String!
 }
 
 scalar ServiceInstanceLimit
