@@ -134,6 +134,8 @@ enum ActivePlatformFlag {
   IN_DASHBOARD_SUPPORT
   KAFKA_EPHEMERAL_ENVIRONMENT_UPDATES
   LOGS_LONG_WINDOW_CHUNKING
+  MCP_OAUTH_AUDIENCE_ENFORCE
+  MCP_OAUTH_SCOPE_CHALLENGES
   NEW_PROJECT_PAGE
   NEW_STRIPE_WEBHOOK_VERSION_ROLLOUT
   NUDGES
@@ -155,6 +157,7 @@ enum ActivePlatformFlag {
   STRIPE_METERS_NEW_ACCOUNTS
   STRIPE_METERS_SHADOW_ENABLED
   STRIPE_WEBHOOK_DISPUTE_CANCELLATION
+  TRIAL_RELAY_MODEL_ALLOWLIST_KILLSWITCH
   UPDATED_VM_QUERIES
   USAGE_CH_READS
   VM_COUPON_MIGRATION
@@ -800,6 +803,11 @@ input CloudAgentTaskDispatchInput {
   """Existing session to continue; requires cloudAgentId."""
   sessionId: String
   source: CloudAgentSourceInput
+
+  """
+  Also send task.progress callbacks, at most one per task every 15 seconds.
+  """
+  webhookProgress: Boolean
   webhookSecret: String
   webhookUrl: String
 }
@@ -810,6 +818,38 @@ type CloudAgentTaskHandle {
   sessionId: String!
   status: CloudAgentTaskStatus!
   taskId: ID!
+}
+
+"""
+A question the task's run is waiting on: a tool approval or an MCP server's form.
+"""
+type CloudAgentTaskInteraction {
+  actions: [CloudAgentTaskInteractionAction!]!
+  expiresAt: String
+
+  """Elicitation: the form fields to fill for ACCEPT."""
+  fields: JSON
+  kind: String!
+  message: String
+  requestId: ID!
+  requestedAt: String
+
+  """Elicitation: the MCP server asking."""
+  server: String
+
+  """Approval: a preview of the tool call's arguments."""
+  summary: JSON
+
+  """Approval: the tool waiting to run."""
+  tool: String
+}
+
+enum CloudAgentTaskInteractionAction {
+  ACCEPT
+  ALLOW
+  CANCEL
+  DECLINE
+  DENY
 }
 
 enum CloudAgentTaskMode {
@@ -823,12 +863,47 @@ type CloudAgentTaskPage {
   tasks: [CloudAgentTask!]!
 }
 
+type CloudAgentTaskProgress {
+  attempt: Int
+  steps: Int!
+  todos: JSON
+
+  """Tools running now, by name."""
+  tools: [String!]!
+  updatedAt: String!
+}
+
+input CloudAgentTaskRespondInput {
+  action: CloudAgentTaskInteractionAction!
+
+  """
+  Who gave the answer, for the audit log (e.g. linear:<userId>). Not verified.
+  """
+  answeredBy: String
+
+  """ACCEPT only: the form values, keyed by field name."""
+  content: JSON
+
+  """pendingInteractions[].requestId"""
+  requestId: String!
+  taskId: String!
+}
+
+type CloudAgentTaskRespondResult {
+  outcome: String!
+  taskId: ID!
+}
+
 type CloudAgentTaskResult {
   cloudAgentId: ID!
   completedAt: String
   error: String
   externalRef: String
   metadata: JSON
+
+  """Answer these with cloudAgentTaskRespond."""
+  pendingInteractions: [CloudAgentTaskInteraction!]!
+  progress: CloudAgentTaskProgress
   sessionId: String!
   sessionState: String
   status: CloudAgentTaskStatus!
@@ -2379,6 +2454,11 @@ type Mutation {
   """Recover the latest task response from the agent. May wake the VM."""
   cloudAgentTaskRecover(cloudAgentId: String!, sessionId: String!): CloudAgentTaskResult!
 
+  """
+  Answer a question the task is waiting on. Never wakes the VM; poll cloudAgentTask for the outcome.
+  """
+  cloudAgentTaskRespond(input: CloudAgentTaskRespondInput!): CloudAgentTaskRespondResult!
+
   """Wake a sleeping cloud agent."""
   cloudAgentWake(id: ID!): CloudAgent!
 
@@ -3800,6 +3880,8 @@ enum PlatformFeatureFlag {
   IN_DASHBOARD_SUPPORT
   KAFKA_EPHEMERAL_ENVIRONMENT_UPDATES
   LOGS_LONG_WINDOW_CHUNKING
+  MCP_OAUTH_AUDIENCE_ENFORCE
+  MCP_OAUTH_SCOPE_CHALLENGES
   NEW_PROJECT_PAGE
   NEW_STRIPE_WEBHOOK_VERSION_ROLLOUT
   NUDGES
@@ -3821,6 +3903,7 @@ enum PlatformFeatureFlag {
   STRIPE_METERS_NEW_ACCOUNTS
   STRIPE_METERS_SHADOW_ENABLED
   STRIPE_WEBHOOK_DISPUTE_CANCELLATION
+  TRIAL_RELAY_MODEL_ALLOWLIST_KILLSWITCH
   UPDATED_VM_QUERIES
   USAGE_CH_READS
   VM_COUPON_MIGRATION
