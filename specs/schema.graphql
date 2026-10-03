@@ -135,7 +135,9 @@ enum ActivePlatformFlag {
   KAFKA_EPHEMERAL_ENVIRONMENT_UPDATES
   LOGS_LONG_WINDOW_CHUNKING
   MCP_OAUTH_AUDIENCE_ENFORCE
+  MCP_OAUTH_CIMD
   MCP_OAUTH_SCOPE_CHALLENGES
+  MCP_OAUTH_TOKEN_ROUTE_FENCE
   NEW_PROJECT_PAGE
   NEW_STRIPE_WEBHOOK_VERSION_ROLLOUT
   NUDGES
@@ -148,6 +150,7 @@ enum ActivePlatformFlag {
   PRE_DEPLOY_TIMEOUT_KILLSWITCH
   PROJECT_HISTORY_DUAL_WRITE
   RADAR_HTTP_PATTERN_DETECTION
+  RELAY_SPEND_RESERVATION_KILLSWITCH
   REMOVE_DEPLOYMENT_COMPACT
   SERVICEINSTANCE_DATALOADER_FOR_STATIC_URL
   SPLIT_USAGE_QUERIES
@@ -777,6 +780,18 @@ type CloudAgentTask {
   sessionId: String
   startedAt: DateTime
   status: CloudAgentTaskStatus!
+  structuredOutput: JSON
+
+  """The turn's closing text, once it has finished."""
+  text: String
+}
+
+type CloudAgentTaskCancelResult {
+  """
+  The status when cancel was requested. Poll cloudAgentTask for the outcome.
+  """
+  status: CloudAgentTaskStatus!
+  taskId: ID!
 }
 
 input CloudAgentTaskDispatchInput {
@@ -1571,6 +1586,28 @@ input EnableServiceCdnInput {
 type Environment implements Node {
   canAccess: Boolean!
   canvasGroupRefs: JSON!
+
+  """
+  Services whose edge caching was turned off when the Railway Authentication default last turned on.
+  """
+  clearanceCachingTurnedOff: [String!]!
+
+  """
+  Whether Railway Authentication protects this environment's services that have no setting of their own.
+  """
+  clearanceDefault: Boolean!
+  clearanceDefaultUpdatedAt: DateTime
+
+  """
+  When the current Railway Authentication default last finished reaching every service that inherits it.
+  """
+  clearancePropagatedAt: DateTime
+  clearancePropagationError: String
+
+  """
+  How many of the environment's services follow its Railway Authentication default, and how many have their own on or off.
+  """
+  clearanceServiceCounts: EnvironmentClearanceServiceCounts!
   config(decryptVariables: Boolean): EnvironmentConfig!
 
   """
@@ -1597,6 +1634,18 @@ type Environment implements Node {
   updatedAt: DateTime!
   variables(after: String, before: String, first: Int, last: Int): EnvironmentVariablesConnection!
   volumeInstances(after: String, before: String, first: Int, last: Int): EnvironmentVolumeInstancesConnection!
+}
+
+input EnvironmentClearanceDefaultUpdateInput {
+  enabled: Boolean!
+  environmentId: String!
+  projectId: String!
+}
+
+type EnvironmentClearanceServiceCounts {
+  inheriting: Int!
+  off: Int!
+  on: Int!
 }
 
 "\nEnvironmentConfig is a custom scalar type that represents the serializedConfig for an environment.\nJSON Schema: https://backboard.railway.com/schema/environment.schema.json\n"
@@ -2447,6 +2496,11 @@ type Mutation {
   cloudAgentStateReport(input: CloudAgentStateReportInput!): Boolean!
 
   """
+  Stop a task. Before its prompt is sent it never starts; after, only its own run is aborted. The task ends failed with "The task was cancelled". A finished task is left as is.
+  """
+  cloudAgentTaskCancel(taskId: String!): CloudAgentTaskCancelResult!
+
+  """
   Start a task and return its handle. Creates a fresh agent by default; replyToTaskId continues the original conversation.
   """
   cloudAgentTaskDispatch(input: CloudAgentTaskDispatchInput!): CloudAgentTaskHandle!
@@ -2590,6 +2644,11 @@ type Mutation {
     """
     waitForCompletion: Boolean
   ): ChangeSetApplyResult!
+
+  """
+  Sets whether Railway Authentication protects an environment's services that have no setting of their own, and pushes it to them. Requires a workspace admin; turning it on also requires the workspace's Railway Authentication entitlement. Services with edge caching on that it protects have their caching turned off.
+  """
+  environmentClearanceDefaultUpdate(input: EnvironmentClearanceDefaultUpdateInput!): Boolean!
 
   """
   Posts or updates a `railway config plan` comment on a GitHub pull request under the Railway app identity. The caller proves it runs in the target repo with a GitHub Actions OIDC token; the comment body is composed server-side from the structured plan.
@@ -2814,6 +2873,11 @@ type Mutation {
 
   """Claims a project."""
   projectClaim(id: String!, workspaceId: String!): Project!
+
+  """
+  Sets whether environments created from now on start with Railway Authentication protecting services that have no setting of their own. Existing environments are unchanged. Requires a workspace admin; turning it on also requires the workspace's Railway Authentication entitlement.
+  """
+  projectClearanceDefaultUpdate(input: ProjectClearanceDefaultUpdateInput!): Boolean!
 
   """Creates a new project."""
   projectCreate(input: ProjectCreateInput!): Project!
@@ -3045,7 +3109,7 @@ type Mutation {
   serviceInstanceAutoUpdateSnoozeClear(environmentId: String!, serviceId: String!): Boolean!
 
   """
-  Turns Railway Authentication on or off for a service instance. Turning it on requires the Railway Authentication feature flag.
+  Sets a service instance's own Railway Authentication setting: on, off, or none (follow the environment's default). Requires a workspace admin; ending up on also requires the workspace's Railway Authentication entitlement and edge caching off.
   """
   serviceInstanceClearanceUpdate(input: ServiceInstanceClearanceUpdateInput!): Boolean!
 
@@ -3881,7 +3945,9 @@ enum PlatformFeatureFlag {
   KAFKA_EPHEMERAL_ENVIRONMENT_UPDATES
   LOGS_LONG_WINDOW_CHUNKING
   MCP_OAUTH_AUDIENCE_ENFORCE
+  MCP_OAUTH_CIMD
   MCP_OAUTH_SCOPE_CHALLENGES
+  MCP_OAUTH_TOKEN_ROUTE_FENCE
   NEW_PROJECT_PAGE
   NEW_STRIPE_WEBHOOK_VERSION_ROLLOUT
   NUDGES
@@ -3894,6 +3960,7 @@ enum PlatformFeatureFlag {
   PRE_DEPLOY_TIMEOUT_KILLSWITCH
   PROJECT_HISTORY_DUAL_WRITE
   RADAR_HTTP_PATTERN_DETECTION
+  RELAY_SPEND_RESERVATION_KILLSWITCH
   REMOVE_DEPLOYMENT_COMPACT
   SERVICEINSTANCE_DATALOADER_FOR_STATIC_URL
   SPLIT_USAGE_QUERIES
@@ -4073,6 +4140,11 @@ type Project implements Node {
   baseEnvironmentId: String
   botPrEnvironments: Boolean!
   buckets(after: String, before: String, first: Int, last: Int): ProjectBucketsConnection!
+
+  """
+  Whether environments created from now on start with Railway Authentication protecting services that have no setting of their own. Existing environments keep their own default.
+  """
+  clearanceDefaultForNewEnvironments: Boolean!
   createdAt: DateTime!
   deletedAt: DateTime
   deploymentTriggers(after: String, before: String, first: Int, last: Int): ProjectDeploymentTriggersConnection! @deprecated(reason: "Use environment.deploymentTriggers for properly scoped access control")
@@ -4122,6 +4194,11 @@ type ProjectBucketsConnection {
 type ProjectBucketsConnectionEdge {
   cursor: String!
   node: Bucket!
+}
+
+input ProjectClearanceDefaultUpdateInput {
+  enabled: Boolean!
+  projectId: String!
 }
 
 type ProjectComplianceInfo {
@@ -4615,11 +4692,30 @@ type Query {
   """
   cloudAgentConsoleSessions(after: String, before: String, cloudAgentId: ID!, first: Int, last: Int): QueryCloudAgentConsoleSessionsConnection
 
-  """Read the latest task on an agent/session without waking the VM."""
-  cloudAgentTask(cloudAgentId: String!, sessionId: String!): CloudAgentTaskResult!
+  """
+  Read a task turn without waking the VM: the latest on the agent/session, or taskId's.
+  """
+  cloudAgentTask(
+    cloudAgentId: String!
+    sessionId: String!
 
-  """List task lifecycle records in an environment, newest first."""
-  cloudAgentTasks(cursor: String, environmentId: String!, limit: Int, status: CloudAgentTaskStatus): CloudAgentTaskPage!
+    """An earlier turn on this session; default the latest."""
+    taskId: String
+  ): CloudAgentTaskResult!
+
+  """
+  List task records in an environment, newest first. Filter to one agent, or with sessionId to one session's turns.
+  """
+  cloudAgentTasks(
+    cloudAgentId: String
+    cursor: String
+    environmentId: String!
+    limit: Int
+
+    """Requires cloudAgentId."""
+    sessionId: String
+    status: CloudAgentTaskStatus
+  ): CloudAgentTaskPage!
 
   """Cloud agents in an environment."""
   cloudAgents(
@@ -6468,9 +6564,14 @@ type ServiceInstance implements Node {
   builder: Builder!
 
   """
-  Whether Railway Authentication protects this service's HTTP domains. Null means no setting of its own.
+  This service's own Railway Authentication setting. Null means no setting of its own: it follows the environment's default (see clearanceEffective).
   """
   clearance: Boolean
+
+  """
+  Whether Railway Authentication protects this service's HTTP domains: its own setting, else its environment's default.
+  """
+  clearanceEffective: Boolean!
   createdAt: DateTime!
   cronSchedule: String
   deletedAt: DateTime
@@ -6543,7 +6644,10 @@ type ServiceInstanceAutoDeployUpdateResult {
 }
 
 input ServiceInstanceClearanceUpdateInput {
-  enabled: Boolean!
+  """
+  On or off. Null (or omitted) removes the service's own setting so it follows the environment's default.
+  """
+  enabled: Boolean
   environmentId: String!
   projectId: String!
   serviceId: String!

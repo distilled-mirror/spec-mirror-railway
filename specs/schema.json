@@ -1246,7 +1246,19 @@
             "deprecationReason": null
           },
           {
+            "name": "MCP_OAUTH_CIMD",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "MCP_OAUTH_SCOPE_CHALLENGES",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "MCP_OAUTH_TOKEN_ROUTE_FENCE",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
@@ -1319,6 +1331,12 @@
           },
           {
             "name": "RADAR_HTTP_PATTERN_DETECTION",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "RELAY_SPEND_RESERVATION_KILLSWITCH",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
@@ -6004,6 +6022,73 @@
               "ofType": {
                 "name": "CloudAgentTaskStatus",
                 "kind": "ENUM",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "structuredOutput",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "JSON",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "text",
+            "description": "The turn's closing text, once it has finished.",
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "OBJECT",
+        "name": "CloudAgentTaskCancelResult",
+        "description": null,
+        "fields": [
+          {
+            "name": "status",
+            "description": "The status when cancel was requested. Poll cloudAgentTask for the outcome.",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": "CloudAgentTaskStatus",
+                "kind": "ENUM",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "taskId",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": "ID",
+                "kind": "SCALAR",
                 "ofType": null
               }
             },
@@ -12911,6 +12996,98 @@
             "deprecationReason": null
           },
           {
+            "name": "clearanceCachingTurnedOff",
+            "description": "Services whose edge caching was turned off when the Railway Authentication default last turned on.",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": null,
+                "kind": "LIST",
+                "ofType": {
+                  "name": null,
+                  "kind": "NON_NULL",
+                  "ofType": {
+                    "name": "String",
+                    "kind": "SCALAR",
+                    "ofType": null
+                  }
+                }
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "clearanceDefault",
+            "description": "Whether Railway Authentication protects this environment's services that have no setting of their own.",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": "Boolean",
+                "kind": "SCALAR",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "clearanceDefaultUpdatedAt",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "DateTime",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "clearancePropagatedAt",
+            "description": "When the current Railway Authentication default last finished reaching every service that inherits it.",
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "DateTime",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "clearancePropagationError",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "clearanceServiceCounts",
+            "description": "How many of the environment's services follow its Railway Authentication default, and how many have their own on or off.",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": "EnvironmentClearanceServiceCounts",
+                "kind": "OBJECT",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "config",
             "description": null,
             "args": [
@@ -13403,6 +13580,118 @@
             "ofType": null
           }
         ],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "INPUT_OBJECT",
+        "name": "EnvironmentClearanceDefaultUpdateInput",
+        "description": null,
+        "fields": null,
+        "inputFields": [
+          {
+            "name": "enabled",
+            "description": null,
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": "Boolean",
+                "kind": "SCALAR",
+                "ofType": null
+              }
+            },
+            "defaultValue": null
+          },
+          {
+            "name": "environmentId",
+            "description": null,
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": "String",
+                "kind": "SCALAR",
+                "ofType": null
+              }
+            },
+            "defaultValue": null
+          },
+          {
+            "name": "projectId",
+            "description": null,
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": "String",
+                "kind": "SCALAR",
+                "ofType": null
+              }
+            },
+            "defaultValue": null
+          }
+        ],
+        "interfaces": null,
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "OBJECT",
+        "name": "EnvironmentClearanceServiceCounts",
+        "description": null,
+        "fields": [
+          {
+            "name": "inheriting",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": "Int",
+                "kind": "SCALAR",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "off",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": "Int",
+                "kind": "SCALAR",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "on",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": "Int",
+                "kind": "SCALAR",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [],
         "enumValues": null,
         "possibleTypes": null
       },
@@ -20088,6 +20377,37 @@
             "deprecationReason": null
           },
           {
+            "name": "cloudAgentTaskCancel",
+            "description": "Stop a task. Before its prompt is sent it never starts; after, only its own run is aborted. The task ends failed with \"The task was cancelled\". A finished task is left as is.",
+            "args": [
+              {
+                "name": "taskId",
+                "description": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "name": "String",
+                    "kind": "SCALAR",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null
+              }
+            ],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": "CloudAgentTaskCancelResult",
+                "kind": "OBJECT",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "cloudAgentTaskDispatch",
             "description": "Start a task and return its handle. Creates a fresh agent by default; replyToTaskId continues the original conversation.",
             "args": [
@@ -21364,6 +21684,37 @@
               "ofType": {
                 "name": "ChangeSetApplyResult",
                 "kind": "OBJECT",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "environmentClearanceDefaultUpdate",
+            "description": "Sets whether Railway Authentication protects an environment's services that have no setting of their own, and pushes it to them. Requires a workspace admin; turning it on also requires the workspace's Railway Authentication entitlement. Services with edge caching on that it protects have their caching turned off.",
+            "args": [
+              {
+                "name": "input",
+                "description": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "name": "EnvironmentClearanceDefaultUpdateInput",
+                    "kind": "INPUT_OBJECT",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null
+              }
+            ],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": "Boolean",
+                "kind": "SCALAR",
                 "ofType": null
               }
             },
@@ -23365,6 +23716,37 @@
               "ofType": {
                 "name": "Project",
                 "kind": "OBJECT",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "projectClearanceDefaultUpdate",
+            "description": "Sets whether environments created from now on start with Railway Authentication protecting services that have no setting of their own. Existing environments are unchanged. Requires a workspace admin; turning it on also requires the workspace's Railway Authentication entitlement.",
+            "args": [
+              {
+                "name": "input",
+                "description": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "name": "ProjectClearanceDefaultUpdateInput",
+                    "kind": "INPUT_OBJECT",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null
+              }
+            ],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": "Boolean",
+                "kind": "SCALAR",
                 "ofType": null
               }
             },
@@ -25595,7 +25977,7 @@
           },
           {
             "name": "serviceInstanceClearanceUpdate",
-            "description": "Turns Railway Authentication on or off for a service instance. Turning it on requires the Railway Authentication feature flag.",
+            "description": "Sets a service instance's own Railway Authentication setting: on, off, or none (follow the environment's default). Requires a workspace admin; ending up on also requires the workspace's Railway Authentication entitlement and edge caching off.",
             "args": [
               {
                 "name": "input",
@@ -33046,7 +33428,19 @@
             "deprecationReason": null
           },
           {
+            "name": "MCP_OAUTH_CIMD",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "MCP_OAUTH_SCOPE_CHALLENGES",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "MCP_OAUTH_TOKEN_ROUTE_FENCE",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
@@ -33119,6 +33513,12 @@
           },
           {
             "name": "RADAR_HTTP_PATTERN_DETECTION",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "RELAY_SPEND_RESERVATION_KILLSWITCH",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
@@ -34929,6 +35329,22 @@
             "deprecationReason": null
           },
           {
+            "name": "clearanceDefaultForNewEnvironments",
+            "description": "Whether environments created from now on start with Railway Authentication protecting services that have no setting of their own. Existing environments keep their own default.",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": "Boolean",
+                "kind": "SCALAR",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "createdAt",
             "description": null,
             "args": [],
@@ -35851,6 +36267,45 @@
         ],
         "inputFields": null,
         "interfaces": [],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "INPUT_OBJECT",
+        "name": "ProjectClearanceDefaultUpdateInput",
+        "description": null,
+        "fields": null,
+        "inputFields": [
+          {
+            "name": "enabled",
+            "description": null,
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": "Boolean",
+                "kind": "SCALAR",
+                "ofType": null
+              }
+            },
+            "defaultValue": null
+          },
+          {
+            "name": "projectId",
+            "description": null,
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": "String",
+                "kind": "SCALAR",
+                "ofType": null
+              }
+            },
+            "defaultValue": null
+          }
+        ],
+        "interfaces": null,
         "enumValues": null,
         "possibleTypes": null
       },
@@ -40321,7 +40776,7 @@
           },
           {
             "name": "cloudAgentTask",
-            "description": "Read the latest task on an agent/session without waking the VM.",
+            "description": "Read a task turn without waking the VM: the latest on the agent/session, or taskId's.",
             "args": [
               {
                 "name": "cloudAgentId",
@@ -40350,6 +40805,16 @@
                   }
                 },
                 "defaultValue": null
+              },
+              {
+                "name": "taskId",
+                "description": "An earlier turn on this session; default the latest.",
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                },
+                "defaultValue": null
               }
             ],
             "type": {
@@ -40366,8 +40831,18 @@
           },
           {
             "name": "cloudAgentTasks",
-            "description": "List task lifecycle records in an environment, newest first.",
+            "description": "List task records in an environment, newest first. Filter to one agent, or with sessionId to one session's turns.",
             "args": [
+              {
+                "name": "cloudAgentId",
+                "description": null,
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                },
+                "defaultValue": null
+              },
               {
                 "name": "cursor",
                 "description": null,
@@ -40398,6 +40873,16 @@
                 "type": {
                   "kind": "SCALAR",
                   "name": "Int",
+                  "ofType": null
+                },
+                "defaultValue": null
+              },
+              {
+                "name": "sessionId",
+                "description": "Requires cloudAgentId.",
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "String",
                   "ofType": null
                 },
                 "defaultValue": null
@@ -55287,12 +55772,28 @@
           },
           {
             "name": "clearance",
-            "description": "Whether Railway Authentication protects this service's HTTP domains. Null means no setting of its own.",
+            "description": "This service's own Railway Authentication setting. Null means no setting of its own: it follows the environment's default (see clearanceEffective).",
             "args": [],
             "type": {
               "kind": "SCALAR",
               "name": "Boolean",
               "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "clearanceEffective",
+            "description": "Whether Railway Authentication protects this service's HTTP domains: its own setting, else its environment's default.",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": "Boolean",
+                "kind": "SCALAR",
+                "ofType": null
+              }
             },
             "isDeprecated": false,
             "deprecationReason": null
@@ -55986,15 +56487,11 @@
         "inputFields": [
           {
             "name": "enabled",
-            "description": null,
+            "description": "On or off. Null (or omitted) removes the service's own setting so it follows the environment's default.",
             "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "name": "Boolean",
-                "kind": "SCALAR",
-                "ofType": null
-              }
+              "kind": "SCALAR",
+              "name": "Boolean",
+              "ofType": null
             },
             "defaultValue": null
           },
