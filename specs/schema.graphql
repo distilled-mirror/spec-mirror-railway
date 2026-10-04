@@ -485,6 +485,47 @@ type ChangeSetPreview {
   effects: JSON!
 }
 
+"""
+A Railway Authentication machine token: gets non-human callers past the sign-in on a project's protected services. The token itself is only returned when it's created.
+"""
+type ClearanceToken {
+  createdAt: DateTime!
+  creator: ClearanceTokenCreator
+
+  """Null means every environment of the project."""
+  environmentId: String
+  environmentName: String
+  expiresAt: DateTime!
+  id: String!
+  name: String!
+}
+
+input ClearanceTokenCreateInput {
+  """
+  Limit the token to one persistent environment. Omit for every environment, including PR environments made later.
+  """
+  environmentId: String
+
+  """Days until the token expires: 1 to 365, default 90."""
+  expiresInDays: Int
+  name: String!
+  projectId: String!
+}
+
+type ClearanceTokenCreatePayload {
+  clearanceToken: ClearanceToken!
+
+  """The token. Shown this once; it isn't stored."""
+  token: String!
+}
+
+type ClearanceTokenCreator {
+  avatar: String
+  email: String!
+  id: String!
+  name: String
+}
+
 input CliAuthEventTrackInput {
   agentSessionId: String
   arch: String
@@ -2440,6 +2481,16 @@ type Mutation {
   """
   clearPitrHaWorkflowProgress(environmentId: String!, rootServiceId: String!): Boolean!
 
+  """
+  Creates a Railway Authentication token for a project's protected services and returns it once. Requires a workspace admin and the workspace's Railway Authentication entitlement.
+  """
+  clearanceTokenCreate(input: ClearanceTokenCreateInput!): ClearanceTokenCreatePayload!
+
+  """
+  Revokes a Railway Authentication token. Requires a workspace admin; works without the entitlement. Revoking a revoked token succeeds.
+  """
+  clearanceTokenRevoke(id: String!): Boolean!
+
   """Track CLI authentication-attempt outcomes (signup / sign-in funnel)"""
   cliAuthEventTrack(input: CliAuthEventTrackInput!): Boolean!
 
@@ -4145,6 +4196,11 @@ type Project implements Node {
   Whether environments created from now on start with Railway Authentication protecting services that have no setting of their own. Existing environments keep their own default.
   """
   clearanceDefaultForNewEnvironments: Boolean!
+
+  """
+  The project's Railway Authentication tokens that still work (not revoked, not expired), newest first.
+  """
+  clearanceTokens: [ClearanceToken!]!
   createdAt: DateTime!
   deletedAt: DateTime
   deploymentTriggers(after: String, before: String, first: Int, last: Int): ProjectDeploymentTriggersConnection! @deprecated(reason: "Use environment.deploymentTriggers for properly scoped access control")
