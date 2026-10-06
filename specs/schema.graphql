@@ -808,6 +808,8 @@ enum CloudAgentStatus {
 Task lifecycle and correlation. Read cloudAgentTask for the latest session response.
 """
 type CloudAgentTask {
+  """Files the agent linked in this turn's result."""
+  attachments: [CloudAgentTaskAttachment!]!
   cloudAgentId: ID
   completedAt: DateTime
   createdAt: DateTime!
@@ -816,7 +818,11 @@ type CloudAgentTask {
   externalRef: String
   id: ID!
   metadata: JSON
+
+  """The model the turn ran on, once it was submitted."""
+  model: String
   promptPreview: String
+  reasoningEffort: String
   requestedByUserId: ID
   sessionId: String
   startedAt: DateTime
@@ -825,6 +831,18 @@ type CloudAgentTask {
 
   """The turn's closing text, once it has finished."""
   text: String
+}
+
+"""
+A file the agent published and linked in its result. The URL rechecks access on every request and stays valid until expiresAt.
+"""
+type CloudAgentTaskAttachment {
+  bytes: Int
+  contentType: String!
+  expiresAt: String!
+  filename: String!
+  id: ID!
+  url: String!
 }
 
 type CloudAgentTaskCancelResult {
@@ -840,16 +858,41 @@ input CloudAgentTaskDispatchInput {
 
   """Explicit agent reuse. Omit all targets to create a fresh agent."""
   cloudAgentId: String
+
+  """
+  Up to 32 entries of {type, text?, ...scalar attributes} the model reads beside the prompt as background, not instructions: earlier messages, the page a user was on, a log excerpt. On a continued conversation, send only what is new since the last task: earlier turns are already in the session.
+  """
+  context: JSON
+
+  """
+  Your conversation's id (e.g. linear:DEMO-1). The first task starts an agent; later tasks with the same key continue its session, each waiting for the one before it to finish. Mutually exclusive with replyToTaskId and cloudAgentId/sessionId.
+  """
+  conversationKey: String
   environmentId: String!
   externalRef: String
   idempotencyKey: String
+
+  """
+  Up to 4 images the model sees with the prompt (screenshots, mockups), 5 MiB in total. Kept as the agent's attachments.
+  """
+  images: [CloudAgentTaskImageInput!]
   metadata: JSON
   mode: CloudAgentTaskMode
+
+  """
+  A model id from cloudAgentTaskModels. Applies when the task starts a conversation; a later turn may repeat it but not change it. Defaults to your agent model setting.
+  """
+  model: String
 
   """JSON Schema object for structured output; requires PROMPT mode."""
   outputSchema: JSON
   projectId: String!
   prompt: String!
+
+  """
+  One of the model's reasoningEfforts. May change between turns in PROMPT mode.
+  """
+  reasoningEffort: String
 
   """
   Continue this task's original agent/session. Mutually exclusive with cloudAgentId/sessionId.
@@ -874,6 +917,25 @@ type CloudAgentTaskHandle {
   sessionId: String!
   status: CloudAgentTaskStatus!
   taskId: ID!
+}
+
+"""
+An image the model sees with the prompt: PNG, JPEG, or WebP. Send data or url, not both.
+"""
+input CloudAgentTaskImageInput {
+  """
+  Base64 bytes, or a data: URL. Shares the request's 1 MB body limit; send larger images by url.
+  """
+  data: String
+  filename: String
+
+  """Optional; checked against the bytes."""
+  mediaType: String
+
+  """
+  A public HTTPS URL Railway fetches when the task is dispatched, up to 5 MiB.
+  """
+  url: String
 }
 
 """
@@ -914,6 +976,26 @@ enum CloudAgentTaskMode {
   STEER
 }
 
+type CloudAgentTaskModel {
+  displayName: String!
+
+  """Pass as the dispatch's model."""
+  id: ID!
+
+  """A new conversation runs on it when the task names none."""
+  isDefault: Boolean!
+  provider: String!
+
+  """Empty when the model takes no reasoning effort."""
+  reasoningEfforts: [String!]!
+}
+
+type CloudAgentTaskModels {
+  defaultModel: String!
+  defaultReasoningEffort: String
+  models: [CloudAgentTaskModel!]!
+}
+
 type CloudAgentTaskPage {
   nextCursor: String
   tasks: [CloudAgentTask!]!
@@ -951,15 +1033,21 @@ type CloudAgentTaskRespondResult {
 }
 
 type CloudAgentTaskResult {
+  """Files the agent linked in its result, once it ends."""
+  attachments: [CloudAgentTaskAttachment!]!
   cloudAgentId: ID!
   completedAt: String
   error: String
   externalRef: String
   metadata: JSON
 
+  """The model the turn ran on, once it was submitted."""
+  model: String
+
   """Answer these with cloudAgentTaskRespond."""
   pendingInteractions: [CloudAgentTaskInteraction!]!
   progress: CloudAgentTaskProgress
+  reasoningEffort: String
   sessionId: String!
   sessionState: String
   status: CloudAgentTaskStatus!
@@ -4758,6 +4846,11 @@ type Query {
     """An earlier turn on this session; default the latest."""
     taskId: String
   ): CloudAgentTaskResult!
+
+  """
+  The models a task in this environment can run on, and the default a new conversation starts on.
+  """
+  cloudAgentTaskModels(environmentId: String!, projectId: String!): CloudAgentTaskModels!
 
   """
   List task records in an environment, newest first. Filter to one agent, or with sessionId to one session's turns.
