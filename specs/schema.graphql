@@ -110,6 +110,7 @@ enum ActiveFeatureFlag {
 }
 
 enum ActivePlatformFlag {
+  AGENT_CACHE_TOKEN_BILLING
   AGENT_USAGE_CH_INGEST
   ALERT_SUS_USERS_CRON_KILLSWITCH
   BLOCK_TRIAL_RESTRICTION_APPEALS
@@ -586,6 +587,11 @@ type CloudAgent {
   environmentId: String!
   id: ID!
   name: String!
+
+  """
+  Hostname on the environment's private network, e.g. <name>.railway.internal, reachable on any port from services in that environment. Null when the VM is isolated or its private endpoint isn't registered yet.
+  """
+  privateDomain: String
   project: Project!
   projectId: String!
 
@@ -595,7 +601,7 @@ type CloudAgent {
   region: String
 
   """
-  Live coding-agent sessions, one entry per session. Retained for 24h after the last report, so a sleeping agent still shows what it was last doing.
+  Coding-agent sessions, one entry per session, newest first. Kept while the agent sleeps, so it still lists what it was doing.
   """
   sessions: [CloudAgentSnapshot!]!
 
@@ -615,6 +621,7 @@ type CloudAgentCheckpoint {
   failureReason: String
   id: ID!
   name: String
+  projectId: String
 
   """Region the checkpoint was captured in."""
   region: String!
@@ -4060,6 +4067,7 @@ type PlanLimitOverride implements Node {
 }
 
 enum PlatformFeatureFlag {
+  AGENT_CACHE_TOKEN_BILLING
   AGENT_USAGE_CH_INGEST
   ALERT_SUS_USERS_CRON_KILLSWITCH
   BLOCK_TRIAL_RESTRICTION_APPEALS
@@ -6369,6 +6377,11 @@ type Sandbox {
   """
   idleTimeoutMinutes: Int
   networkIsolation: SandboxNetworkIsolation!
+
+  """
+  Hostname on the environment's private network, e.g. <name>.railway.internal, reachable on any port from services in that environment. Null when the VM is isolated or its private endpoint isn't registered yet.
+  """
+  privateDomain: String
   region: String!
   status: SandboxStatus!
 }

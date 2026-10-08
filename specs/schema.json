@@ -1096,6 +1096,12 @@
         "interfaces": null,
         "enumValues": [
           {
+            "name": "AGENT_CACHE_TOKEN_BILLING",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "AGENT_USAGE_CH_INGEST",
             "description": null,
             "isDeprecated": false,
@@ -4837,6 +4843,18 @@
             "deprecationReason": null
           },
           {
+            "name": "privateDomain",
+            "description": "Hostname on the environment's private network, e.g. <name>.railway.internal, reachable on any port from services in that environment. Null when the VM is isolated or its private endpoint isn't registered yet.",
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "project",
             "description": null,
             "args": [],
@@ -4882,7 +4900,7 @@
           },
           {
             "name": "sessions",
-            "description": "Live coding-agent sessions, one entry per session. Retained for 24h after the last report, so a sleeping agent still shows what it was last doing.",
+            "description": "Coding-agent sessions, one entry per session, newest first. Kept while the agent sleeps, so it still lists what it was doing.",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -5005,6 +5023,18 @@
           },
           {
             "name": "name",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "projectId",
             "description": null,
             "args": [],
             "type": {
@@ -34096,6 +34126,12 @@
         "interfaces": null,
         "enumValues": [
           {
+            "name": "AGENT_CACHE_TOKEN_BILLING",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "AGENT_USAGE_CH_INGEST",
             "description": null,
             "isDeprecated": false,
@@ -54526,6 +54562,18 @@
                 "kind": "ENUM",
                 "ofType": null
               }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "privateDomain",
+            "description": "Hostname on the environment's private network, e.g. <name>.railway.internal, reachable on any port from services in that environment. Null when the VM is isolated or its private endpoint isn't registered yet.",
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
             },
             "isDeprecated": false,
             "deprecationReason": null
