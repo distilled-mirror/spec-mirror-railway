@@ -104,6 +104,7 @@ enum ActiveFeatureFlag {
   PRIORITY_BOARDING
   RAILWAY_AGENT_DASHBOARD
   RAILWAY_AGENT_FEED
+  RAILWAY_AUTOMATIONS
   TRACING
   USAGE_INSIGHTS
   VM_STORAGE_TRACES
@@ -615,13 +616,17 @@ type CloudAgent {
 """A checkpoint of a cloud agent's disk."""
 type CloudAgentCheckpoint {
   createdAt: DateTime!
-  environmentId: String!
+
+  """
+  Set when the checkpoint boots only in this environment. Null boots anywhere in the project.
+  """
+  environmentId: String
 
   """Why the capture failed."""
   failureReason: String
   id: ID!
   name: String
-  projectId: String
+  projectId: String!
 
   """Region the checkpoint was captured in."""
   region: String!
@@ -7419,6 +7424,7 @@ type Template implements Node {
   id: ID!
   image: String
   isApproved: Boolean!
+  isOuterEdge: Boolean!
   isV2Template: Boolean!
   isVerified: Boolean!
   languages: [String!]
