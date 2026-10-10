@@ -12246,7 +12246,7 @@
           },
           {
             "name": "rootServiceId",
-            "description": "Root service of the HA Postgres cluster",
+            "description": "The cluster's primary service (Postgres HA or MySQL HA).",
             "type": {
               "kind": "NON_NULL",
               "name": null,
@@ -13678,7 +13678,7 @@
           },
           {
             "name": "rootServiceId",
-            "description": "Root service of the HA Postgres cluster",
+            "description": "The cluster's primary service (Postgres HA or MySQL HA).",
             "type": {
               "kind": "NON_NULL",
               "name": null,
@@ -23281,7 +23281,7 @@
           },
           {
             "name": "generateShellToken",
-            "description": "Mints a 5-minute JWT for opening a browser WS session against tcp-proxy.",
+            "description": "Creates a short-lived (5-minute) token for opening a shell, file, or network session to a running deployment.",
             "args": [
               {
                 "name": "input",
@@ -26725,7 +26725,7 @@
           },
           {
             "name": "serviceInstanceAutoUpdateSnooze",
-            "description": "Skip the next scheduled auto-update occurrence for a service instance, applied immediately (no config staging, no redeploy). The recurring maintenance window and update policy are untouched — this only delays the next fire.",
+            "description": "Skip the next scheduled auto-update for a service instance. Takes effect immediately, with no staged change and no redeploy. The maintenance window and update policy stay as they are. This only delays the next scheduled update.",
             "args": [
               {
                 "name": "environmentId",
@@ -27107,7 +27107,7 @@
           },
           {
             "name": "serviceInstanceVulnRemediationDismiss",
-            "description": "Dismiss a platform-armed database security update notice and stand down the scheduled redeploy",
+            "description": "Dismiss a pending database security update and cancel its scheduled redeploy.",
             "args": [
               {
                 "name": "environmentId",
@@ -27152,7 +27152,7 @@
           },
           {
             "name": "serviceInstanceVulnRemediationPatchNow",
-            "description": "Immediately apply a platform-armed database security update (backup + redeploy). Returns the new deployment id.",
+            "description": "Apply a pending database security update now (backup, then redeploy). Returns the new deployment id.",
             "args": [
               {
                 "name": "environmentId",
@@ -29111,7 +29111,7 @@
               },
               {
                 "name": "sourceRepoPath",
-                "description": "Opaque identifier for one archive history, from the multi-history picker when the source bucket holds more than one. It scopes both the restore-window pre-check and the restored fork's archive source, treating the selected history as frozen. Pass null to restore the source's current history.",
+                "description": "One of the source's backup histories, as listed by the backup history picker. Pass null to use the source's current history.",
                 "type": {
                   "kind": "SCALAR",
                   "name": "String",
@@ -33941,7 +33941,7 @@
       {
         "kind": "OBJECT",
         "name": "PitrRestoreScratchEstimate",
-        "description": "Estimated destination-volume scratch a PITR restore to a target needs: the base backup's data plus every WAL segment replayed from that backup to the target (Postgres holds replayed WAL in pg_wal faster than restartpoints recycle it). A conservative over-estimate for a non-blocking pre-restore warning — not a gate.",
+        "description": "Estimated disk space a point-in-time restore to a target needs, and whether it fits your plan's largest volume. A conservative estimate for the restore dialog's warning.",
         "fields": [
           {
             "name": "baseBackupLabel",
@@ -48920,11 +48920,11 @@
           },
           {
             "name": "volumeInstancePitrRestoreEstimate",
-            "description": "Estimated destination-volume scratch a PITR restore of this volume instance to a target would need, and whether it fits the workspace plan's max volume size. Read-only pre-check the restore dialog calls to warn before a restore that would fill the disk mid-replay; returns null when no estimate can be formed (non-pgBackRest source, incomplete archive creds, or a target before the earliest backup).",
+            "description": "Estimated disk space a point-in-time restore to this target needs, and whether it fits your plan's largest volume. Returns null when no estimate is available.",
             "args": [
               {
                 "name": "sourceRepoPath",
-                "description": "Multi-history picker's selected archive sub-prefix, matching the restore mutation's argument. Pass null for the source's current history.",
+                "description": "One of the source's backup histories, as listed by the backup history picker. Pass null to use the source's current history.",
                 "type": {
                   "kind": "SCALAR",
                   "name": "String",
@@ -63225,7 +63225,7 @@
           },
           {
             "name": "existingRootServiceId",
-            "description": "Use an existing service as the cluster root instead of creating a new one. A live cluster edge is resolved to the root it fronts. Used for HA cluster conversion where an existing postgres becomes the primary.",
+            "description": "An existing database service to convert. If you pass a cluster's proxy service, Railway uses the database behind it.",
             "type": {
               "kind": "SCALAR",
               "name": "String",
