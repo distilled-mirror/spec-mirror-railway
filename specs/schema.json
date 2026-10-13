@@ -1049,6 +1049,18 @@
             "deprecationReason": null
           },
           {
+            "name": "MANAGED_DATABASE_EDIT_WARNING",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "MANAGED_DATABASE_SETUP",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "PRIORITY_BOARDING",
             "description": null,
             "isDeprecated": false,
@@ -1367,6 +1379,18 @@
           },
           {
             "name": "SSH_ANON_PROVISIONING",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "SSH_ANON_REFUSE_NO_PTY",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "SSH_ANON_REFUSE_ZERO_SIZE_PTY",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
@@ -34397,6 +34421,18 @@
           },
           {
             "name": "SSH_ANON_PROVISIONING",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "SSH_ANON_REFUSE_NO_PTY",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "SSH_ANON_REFUSE_ZERO_SIZE_PTY",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
