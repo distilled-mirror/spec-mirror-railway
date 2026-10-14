@@ -929,6 +929,12 @@
         "interfaces": null,
         "enumValues": [
           {
+            "name": "ACTIVITY_FEED_FILTERS",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "ACTIVITY_FEED_HISTORY",
             "description": null,
             "isDeprecated": false,
@@ -1025,12 +1031,6 @@
             "deprecationReason": null
           },
           {
-            "name": "EMAIL_FORWARDING",
-            "description": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "HA_FOR_MONGO",
             "description": null,
             "isDeprecated": false,
@@ -1113,6 +1113,12 @@
         "inputFields": null,
         "interfaces": null,
         "enumValues": [
+          {
+            "name": "ACTIVITY_FEED_FILTERS_KILLSWITCH",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
           {
             "name": "AGENT_CACHE_TOKEN_BILLING",
             "description": null,
@@ -1366,6 +1372,12 @@
             "deprecationReason": null
           },
           {
+            "name": "RESTRICTION_ABUSE_QUEUE",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "SERVICEINSTANCE_DATALOADER_FOR_STATIC_URL",
             "description": null,
             "isDeprecated": false,
@@ -1444,6 +1456,12 @@
             "deprecationReason": null
           },
           {
+            "name": "VERIFIERS",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "VM_COUPON_MIGRATION",
             "description": null,
             "isDeprecated": false,
@@ -1472,6 +1490,12 @@
         "inputFields": null,
         "interfaces": null,
         "enumValues": [
+          {
+            "name": "BUILDER_V4",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
           {
             "name": "LEGACY_CONFIG_AS_CODE",
             "description": null,
@@ -17489,6 +17513,16 @@
             "defaultValue": null
           },
           {
+            "name": "mode",
+            "description": "ACTIVITY_FEED narrows history to what the dashboard's feed shows. It admits rows belonging to the project rather than to one environment, so a service arriving or leaving still appears. When `serviceIds` is given it also keeps rows that name no service, so the caller can scope them itself, and bounds the scan to thirty days unless `since` says otherwise. Leave unset for raw history.",
+            "type": {
+              "kind": "ENUM",
+              "name": "HistoryFilterMode",
+              "ofType": null
+            },
+            "defaultValue": null
+          },
+          {
             "name": "objects",
             "description": null,
             "type": {
@@ -17541,10 +17575,37 @@
               }
             },
             "defaultValue": null
+          },
+          {
+            "name": "since",
+            "description": "Inclusive ISO timestamp lower bound.",
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "defaultValue": null
           }
         ],
         "interfaces": null,
         "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "ENUM",
+        "name": "HistoryFilterMode",
+        "description": "A named reading of history, not a peer of the filter's own fields: a mode expands into them.",
+        "fields": null,
+        "inputFields": null,
+        "interfaces": null,
+        "enumValues": [
+          {
+            "name": "ACTIVITY_FEED",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
         "possibleTypes": null
       },
       {
@@ -21179,6 +21240,65 @@
               "name": null,
               "ofType": {
                 "name": "String",
+                "kind": "SCALAR",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "cloudAgentSessionRename",
+            "description": "Set a session's title, shown over its generated one. An empty title clears it.",
+            "args": [
+              {
+                "name": "cloudAgentId",
+                "description": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "name": "ID",
+                    "kind": "SCALAR",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null
+              },
+              {
+                "name": "sessionId",
+                "description": "The harness's session id.",
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "name": "String",
+                    "kind": "SCALAR",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null
+              },
+              {
+                "name": "title",
+                "description": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "name": "String",
+                    "kind": "SCALAR",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null
+              }
+            ],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": "Boolean",
                 "kind": "SCALAR",
                 "ofType": null
               }
@@ -34156,6 +34276,12 @@
         "interfaces": null,
         "enumValues": [
           {
+            "name": "ACTIVITY_FEED_FILTERS_KILLSWITCH",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "AGENT_CACHE_TOKEN_BILLING",
             "description": null,
             "isDeprecated": false,
@@ -34408,6 +34534,12 @@
             "deprecationReason": null
           },
           {
+            "name": "RESTRICTION_ABUSE_QUEUE",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "SERVICEINSTANCE_DATALOADER_FOR_STATIC_URL",
             "description": null,
             "isDeprecated": false,
@@ -34481,6 +34613,12 @@
           },
           {
             "name": "USAGE_CH_READS",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "VERIFIERS",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
