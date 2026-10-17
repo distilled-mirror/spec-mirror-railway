@@ -929,18 +929,6 @@
         "interfaces": null,
         "enumValues": [
           {
-            "name": "ACTIVITY_FEED_FILTERS",
-            "description": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "ACTIVITY_FEED_HISTORY",
-            "description": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "AGENT_BOOTSTRAPS",
             "description": null,
             "isDeprecated": false,
@@ -4783,6 +4771,16 @@
             "defaultValue": null
           },
           {
+            "name": "ttyStreams",
+            "description": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "defaultValue": null
+          },
+          {
             "name": "workspaceId",
             "description": null,
             "type": {
@@ -4809,6 +4807,18 @@
             "type": {
               "kind": "SCALAR",
               "name": "String",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "archivedAt",
+            "description": "When its owner archived the agent; null unless archived. Archiving only changes which lists show it.",
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "DateTime",
               "ofType": null
             },
             "isDeprecated": false,
@@ -5033,11 +5043,56 @@
             },
             "isDeprecated": false,
             "deprecationReason": null
+          },
+          {
+            "name": "workStatus",
+            "description": "Where the agent's work stands: its most urgent session's status. Kept while the agent sleeps.",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": "CloudAgentWorkStatus",
+                "kind": "OBJECT",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
           }
         ],
         "inputFields": null,
         "interfaces": [],
         "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "ENUM",
+        "name": "CloudAgentBlockedKind",
+        "description": "What a BLOCKED session waits on: a tool call to approve, a question to answer, or a login or credential.",
+        "fields": null,
+        "inputFields": null,
+        "interfaces": null,
+        "enumValues": [
+          {
+            "name": "AUTH",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "PERMISSION",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "QUESTION",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
         "possibleTypes": null
       },
       {
@@ -5825,6 +5880,22 @@
               "ofType": {
                 "name": "String",
                 "kind": "SCALAR",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "workStatus",
+            "description": "Where this session's work stands.",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": "CloudAgentWorkStatus",
+                "kind": "OBJECT",
                 "ofType": null
               }
             },
@@ -8003,6 +8074,126 @@
             "deprecationReason": null
           }
         ],
+        "possibleTypes": null
+      },
+      {
+        "kind": "ENUM",
+        "name": "CloudAgentWorkState",
+        "description": "Where a cloud agent's work stands, named after the OSC 7501 program-status states.",
+        "fields": null,
+        "inputFields": null,
+        "interfaces": null,
+        "enumValues": [
+          {
+            "name": "BLOCKED",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "DONE",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "ERROR",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "IDLE",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "WORKING",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "possibleTypes": null
+      },
+      {
+        "kind": "OBJECT",
+        "name": "CloudAgentWorkStatus",
+        "description": "Where work stands, computed on read from the native harness's run events, else the VM's session report.",
+        "fields": [
+          {
+            "name": "at",
+            "description": "When the fact behind the state happened, by the VM's clock.",
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "DateTime",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "kind",
+            "description": "What a BLOCKED session waits on. Null when the harness doesn't say.",
+            "args": [],
+            "type": {
+              "kind": "ENUM",
+              "name": "CloudAgentBlockedKind",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "message",
+            "description": "One line: the question, the failure, or the closing prose. Only the agent's owner sees it; null for everyone else. Untrusted agent text: render as plain text.",
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "state",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": "CloudAgentWorkState",
+                "kind": "ENUM",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "unseen",
+            "description": "DONE or ERROR, and the owner hasn't looked since. On an agent: any session is. Cleared by cloudAgentMarkSeen.",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": "Boolean",
+                "kind": "SCALAR",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [],
+        "enumValues": null,
         "possibleTypes": null
       },
       {
@@ -20988,6 +21179,37 @@
             "deprecationReason": null
           },
           {
+            "name": "cloudAgentArchive",
+            "description": "Archive a cloud agent: hide it from lists that ask for unarchived agents. Its machine, sessions and history are untouched. Owner only.",
+            "args": [
+              {
+                "name": "id",
+                "description": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "name": "ID",
+                    "kind": "SCALAR",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null
+              }
+            ],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": "Boolean",
+                "kind": "SCALAR",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "cloudAgentCheckpointCreate",
             "description": "Checkpoint the agent's disk. Poll cloudAgentCheckpoint until SUCCEEDED.",
             "args": [
@@ -21310,6 +21532,47 @@
             "deprecationReason": null
           },
           {
+            "name": "cloudAgentMarkSeen",
+            "description": "Record that the agent's owner looked, so its DONE and ERROR outcomes stop being unseen. Without sessionId, every session. Owner only.",
+            "args": [
+              {
+                "name": "cloudAgentId",
+                "description": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "name": "ID",
+                    "kind": "SCALAR",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null
+              },
+              {
+                "name": "sessionId",
+                "description": "The harness's session id.",
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                },
+                "defaultValue": null
+              }
+            ],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": "Boolean",
+                "kind": "SCALAR",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "cloudAgentSessionRename",
             "description": "Set a session's title, shown over its generated one. An empty title clears it.",
             "args": [
@@ -21562,6 +21825,37 @@
               "ofType": {
                 "name": "CloudAgentTaskRespondResult",
                 "kind": "OBJECT",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "cloudAgentUnarchive",
+            "description": "Bring an archived cloud agent back. Owner only.",
+            "args": [
+              {
+                "name": "id",
+                "description": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "name": "ID",
+                    "kind": "SCALAR",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null
+              }
+            ],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": "Boolean",
+                "kind": "SCALAR",
                 "ofType": null
               }
             },
@@ -42137,6 +42431,16 @@
             "description": "Cloud agents in an environment.",
             "args": [
               {
+                "name": "archived",
+                "description": "true: only archived agents; false: only unarchived ones. By default both.",
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "Boolean",
+                  "ofType": null
+                },
+                "defaultValue": null
+              },
+              {
                 "name": "environmentId",
                 "description": null,
                 "type": {
@@ -45095,7 +45399,18 @@
           {
             "name": "myCloudAgents",
             "description": "Cloud agents you own, across every project and environment you can reach. Answers \"where are my agents\" in one request; `cloudAgents` needs one call per environment. Machine fields (`status`, `domain`, `domains`) read the last observed state in batched queries, so selecting them across many environments is fine.",
-            "args": [],
+            "args": [
+              {
+                "name": "archived",
+                "description": "true: only archived agents; false: only unarchived ones. By default both.",
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "Boolean",
+                  "ofType": null
+                },
+                "defaultValue": null
+              }
+            ],
             "type": {
               "kind": "NON_NULL",
               "name": null,
