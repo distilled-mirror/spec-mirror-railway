@@ -29035,8 +29035,8 @@
                 "ofType": null
               }
             },
-            "isDeprecated": false,
-            "deprecationReason": null
+            "isDeprecated": true,
+            "deprecationReason": "Use featureFlagRemove with PRIORITY_BOARDING."
           },
           {
             "name": "userDelete",
@@ -29098,8 +29098,8 @@
                 "ofType": null
               }
             },
-            "isDeprecated": false,
-            "deprecationReason": null
+            "isDeprecated": true,
+            "deprecationReason": "Use featureFlagRemove with PRIORITY_BOARDING. BETA leaves Priority Boarding."
           },
           {
             "name": "userFlagsSet",
@@ -29129,8 +29129,8 @@
                 "ofType": null
               }
             },
-            "isDeprecated": false,
-            "deprecationReason": null
+            "isDeprecated": true,
+            "deprecationReason": "Use featureFlagAdd with PRIORITY_BOARDING. BETA joins Priority Boarding."
           },
           {
             "name": "userProfileUpdate",
@@ -66337,8 +66337,8 @@
                 }
               }
             },
-            "isDeprecated": false,
-            "deprecationReason": null
+            "isDeprecated": true,
+            "deprecationReason": "Priority Boarding is the PRIORITY_BOARDING entry of `featureFlags`. BETA is reported while it is on."
           },
           {
             "name": "githubProviderId",
