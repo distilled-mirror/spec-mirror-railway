@@ -418,7 +418,7 @@
               "kind": "NON_NULL",
               "name": null,
               "ofType": {
-                "name": "User",
+                "name": "UserSummary",
                 "kind": "OBJECT",
                 "ofType": null
               }
@@ -5780,7 +5780,7 @@
           },
           {
             "name": "latestPrompt",
-            "description": "Truncated most recent prompt of the session, display-only. Null when the harness never reported one.",
+            "description": "Truncated most recent prompt of the session, display-only. Null when the harness never reported one, or for viewers who don't own the agent.",
             "args": [],
             "type": {
               "kind": "SCALAR",
@@ -5792,7 +5792,7 @@
           },
           {
             "name": "prompt",
-            "description": "Truncated first prompt of the session, display-only. Null when the harness never reported one.",
+            "description": "Truncated first prompt of the session, display-only. Null when the harness never reported one, or for viewers who don't own the agent.",
             "args": [],
             "type": {
               "kind": "SCALAR",
@@ -5876,7 +5876,7 @@
           },
           {
             "name": "title",
-            "description": "Generated display title for the session, display-only. Null until generated; fall back to latestPrompt, then prompt.",
+            "description": "Generated display title for the session, display-only. Null until generated, or for viewers who don't own the agent; fall back to latestPrompt, then prompt.",
             "args": [],
             "type": {
               "kind": "SCALAR",
@@ -67786,6 +67786,85 @@
         "possibleTypes": null
       },
       {
+        "kind": "OBJECT",
+        "name": "UserSummary",
+        "description": null,
+        "fields": [
+          {
+            "name": "avatar",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "email",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": "String",
+                "kind": "SCALAR",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "id",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": "ID",
+                "kind": "SCALAR",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "name",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "username",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
         "kind": "INPUT_OBJECT",
         "name": "ValidateServiceEdgeRulesInput",
         "description": null,
@@ -71631,7 +71710,7 @@
             "args": [],
             "type": {
               "kind": "OBJECT",
-              "name": "User",
+              "name": "UserSummary",
               "ofType": null
             },
             "isDeprecated": false,
