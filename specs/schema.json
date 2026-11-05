@@ -1067,12 +1067,6 @@
             "deprecationReason": null
           },
           {
-            "name": "RAILWAY_AGENT_FEED",
-            "description": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "RAILWAY_AUTOMATIONS",
             "description": null,
             "isDeprecated": false,
@@ -1235,6 +1229,12 @@
           },
           {
             "name": "EMAIL_FORWARDING_KILLSWITCH",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "ENVIRONMENT_PATCH_ARCHIVE_PRODUCE",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
@@ -1480,6 +1480,18 @@
             "deprecationReason": null
           },
           {
+            "name": "VM_NEW_SERVICES_HOBBY_ROLLOUT",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "VM_NEW_SERVICES_TRIAL_ROLLOUT",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "VM_USAGE_CH_INGEST",
             "description": null,
             "isDeprecated": false,
@@ -1522,6 +1534,12 @@
           },
           {
             "name": "RBS_VOLUMES",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "VM_NEW_SERVICES",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
@@ -11181,6 +11199,22 @@
             "deprecationReason": null
           },
           {
+            "name": "isArchived",
+            "description": "Older terminal deployment kept as history only: it can be redeployed but not rolled back to. Whether its snapshot's variables are still returned is DeploymentSnapshot.variablesRedacted.",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": "Boolean",
+                "kind": "SCALAR",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "meta",
             "description": null,
             "args": [],
@@ -12154,13 +12188,29 @@
           },
           {
             "name": "variables",
-            "description": null,
+            "description": "Empty for archived deployments, whose variables are not kept (see variablesRedacted).",
             "args": [],
             "type": {
               "kind": "NON_NULL",
               "name": null,
               "ofType": {
                 "name": "EnvironmentVariables",
+                "kind": "SCALAR",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "variablesRedacted",
+            "description": "True when the snapshot belongs only to archived deployments, so its variables are not returned.",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": "Boolean",
                 "kind": "SCALAR",
                 "ofType": null
               }
@@ -17843,116 +17893,6 @@
             "ofType": null
           }
         ],
-        "enumValues": null,
-        "possibleTypes": null
-      },
-      {
-        "kind": "OBJECT",
-        "name": "HerokuApp",
-        "description": null,
-        "fields": [
-          {
-            "name": "id",
-            "description": null,
-            "args": [],
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "name": "String",
-                "kind": "SCALAR",
-                "ofType": null
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "name",
-            "description": null,
-            "args": [],
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "name": "String",
-                "kind": "SCALAR",
-                "ofType": null
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          }
-        ],
-        "inputFields": null,
-        "interfaces": [],
-        "enumValues": null,
-        "possibleTypes": null
-      },
-      {
-        "kind": "INPUT_OBJECT",
-        "name": "HerokuImportVariablesInput",
-        "description": null,
-        "fields": null,
-        "inputFields": [
-          {
-            "name": "environmentId",
-            "description": null,
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "name": "String",
-                "kind": "SCALAR",
-                "ofType": null
-              }
-            },
-            "defaultValue": null
-          },
-          {
-            "name": "herokuAppId",
-            "description": null,
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "name": "String",
-                "kind": "SCALAR",
-                "ofType": null
-              }
-            },
-            "defaultValue": null
-          },
-          {
-            "name": "projectId",
-            "description": null,
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "name": "String",
-                "kind": "SCALAR",
-                "ofType": null
-              }
-            },
-            "defaultValue": null
-          },
-          {
-            "name": "serviceId",
-            "description": null,
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "name": "String",
-                "kind": "SCALAR",
-                "ofType": null
-              }
-            },
-            "defaultValue": null
-          }
-        ],
-        "interfaces": null,
         "enumValues": null,
         "possibleTypes": null
       },
@@ -24143,37 +24083,6 @@
               "name": null,
               "ofType": {
                 "name": "Boolean",
-                "kind": "SCALAR",
-                "ofType": null
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "herokuImportVariables",
-            "description": "Import variables from a Heroku app into a Railway service. Returns the number of variables imports",
-            "args": [
-              {
-                "name": "input",
-                "description": null,
-                "type": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "name": "HerokuImportVariablesInput",
-                    "kind": "INPUT_OBJECT",
-                    "ofType": null
-                  }
-                },
-                "defaultValue": null
-              }
-            ],
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "name": "Int",
                 "kind": "SCALAR",
                 "ofType": null
               }
@@ -35126,6 +35035,12 @@
             "deprecationReason": null
           },
           {
+            "name": "ENVIRONMENT_PATCH_ARCHIVE_PRODUCE",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "IN_DASHBOARD_SUPPORT",
             "description": null,
             "isDeprecated": false,
@@ -35361,6 +35276,18 @@
           },
           {
             "name": "VM_COUPON_MIGRATION",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "VM_NEW_SERVICES_HOBBY_ROLLOUT",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "VM_NEW_SERVICES_TRIAL_ROLLOUT",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
@@ -44844,30 +44771,6 @@
                   "ofType": {
                     "name": "String",
                     "kind": "SCALAR",
-                    "ofType": null
-                  }
-                }
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "herokuApps",
-            "description": "Get the Herokus apps for the current user",
-            "args": [],
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "name": null,
-                "kind": "LIST",
-                "ofType": {
-                  "name": null,
-                  "kind": "NON_NULL",
-                  "ofType": {
-                    "name": "HerokuApp",
-                    "kind": "OBJECT",
                     "ofType": null
                   }
                 }
