@@ -1414,6 +1414,12 @@
             "deprecationReason": null
           },
           {
+            "name": "SECRETS_SHADOW_COMPARE_SAMPLE",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "SERVICEINSTANCE_DATALOADER_FOR_STATIC_URL",
             "description": null,
             "isDeprecated": false,
@@ -1564,6 +1570,12 @@
           },
           {
             "name": "VM_NEW_SERVICES",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "VM_VOLUMES",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
@@ -19068,6 +19080,16 @@
             "defaultValue": null
           },
           {
+            "name": "turnstileToken",
+            "description": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "defaultValue": null
+          },
+          {
             "name": "why",
             "description": null,
             "type": {
@@ -23270,6 +23292,37 @@
             "deprecationReason": null
           },
           {
+            "name": "environmentPatchDismissFailure",
+            "description": "Acknowledge a FAILED patch so it no longer shows as the environment's latest failure. The patch is left untouched.",
+            "args": [
+              {
+                "name": "patchId",
+                "description": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "name": "String",
+                    "kind": "SCALAR",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null
+              }
+            ],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": "Boolean",
+                "kind": "SCALAR",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "environmentPatchRestage",
             "description": "Copy a FAILED patch's changes into the environment's staged patch (creating one if needed). The FAILED patch is left untouched.",
             "args": [
@@ -26995,6 +27048,37 @@
               "name": null,
               "ofType": {
                 "name": "Service",
+                "kind": "OBJECT",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "serviceTakedownAcknowledge",
+            "description": "Record that a workspace admin confirms subsequent deployments will exclude the content named in this notice, lifting its persistent takedown restriction. any other restriction on the service, and any other outstanding takedown, still applies. It permits a subsequent deployment; it does not restore an earlier one, and it is not Railway verifying the removal.",
+            "args": [
+              {
+                "name": "input",
+                "description": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "name": "TakedownAcknowledgeInput",
+                    "kind": "INPUT_OBJECT",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null
+              }
+            ],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": "ServiceTakedownAcknowledgment",
                 "kind": "OBJECT",
                 "ofType": null
               }
@@ -34283,6 +34367,12 @@
           },
           {
             "name": "RESTRICTION_ABUSE_QUEUE",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "SECRETS_SHADOW_COMPARE_SAMPLE",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
@@ -55030,6 +55120,18 @@
             "deprecationReason": null
           },
           {
+            "name": "pendingTakedownAcknowledgment",
+            "description": "The takedown notice blocking deployment, readable by workspace members and staff. Public-project visibility does not grant notice access.",
+            "args": [],
+            "type": {
+              "kind": "OBJECT",
+              "name": "ServiceTakedownAcknowledgment",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "project",
             "description": null,
             "args": [],
@@ -55174,6 +55276,30 @@
             },
             "isDeprecated": true,
             "deprecationReason": "Use environment.serviceInstances for properly scoped access control"
+          },
+          {
+            "name": "takedownAcknowledgments",
+            "description": "Every takedown requirement this service has had, newest first, outstanding or cleared. Retained after the service deploys again so the history survives the redeploy it permitted.",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": null,
+                "kind": "LIST",
+                "ofType": {
+                  "name": null,
+                  "kind": "NON_NULL",
+                  "ofType": {
+                    "name": "ServiceTakedownAcknowledgment",
+                    "kind": "OBJECT",
+                    "ofType": null
+                  }
+                }
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
           },
           {
             "name": "templateId",
@@ -57449,6 +57575,253 @@
           }
         ],
         "interfaces": null,
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "OBJECT",
+        "name": "ServiceTakedownAcknowledgment",
+        "description": "A takedown notice the customer must acknowledge before the service can deploy again.",
+        "fields": [
+          {
+            "name": "acknowledgedAt",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "DateTime",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "acknowledgedBy",
+            "description": "The person who attested. Retained after the service deploys again, so the record outlives the gate it cleared.",
+            "args": [],
+            "type": {
+              "kind": "OBJECT",
+              "name": "UserSummary",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "acknowledgedStatement",
+            "description": "The attestation exactly as it was worded when it was confirmed.",
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "clearedAt",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "DateTime",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "customerNotice",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "hasExternalNotice",
+            "description": "False when no customer-visible notice beyond the dashboard page was recorded, so the UI can say so rather than implying the original complaint is linked.",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": "Boolean",
+                "kind": "SCALAR",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "headline",
+            "description": "Customer-safe statement of what happened and why.",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": "String",
+                "kind": "SCALAR",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "id",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": "ID",
+                "kind": "SCALAR",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "instruction",
+            "description": "What the customer has to do before deploying again.",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": "String",
+                "kind": "SCALAR",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "isApplying",
+            "description": "The service teardown has not yet completed; acknowledgment remains unavailable.",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": "Boolean",
+                "kind": "SCALAR",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "noticeKind",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": "TakedownNoticeKind",
+                "kind": "ENUM",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "noticeUrl",
+            "description": "Where to read the notice. Always resolvable: it falls back to the dashboard restriction detail page.",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": "String",
+                "kind": "SCALAR",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "restrictionId",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": "String",
+                "kind": "SCALAR",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "statement",
+            "description": "The attestation the customer must explicitly confirm. Opening or reading the notice is not acknowledgment.",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": "String",
+                "kind": "SCALAR",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "status",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": "TakedownAcknowledgmentStatus",
+                "kind": "ENUM",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "takenDownAt",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": "DateTime",
+                "kind": "SCALAR",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [],
         "enumValues": null,
         "possibleTypes": null
       },
@@ -60773,6 +61146,103 @@
           },
           {
             "name": "UPDATING",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "possibleTypes": null
+      },
+      {
+        "kind": "INPUT_OBJECT",
+        "name": "TakedownAcknowledgeInput",
+        "description": null,
+        "fields": null,
+        "inputFields": [
+          {
+            "name": "acknowledgmentId",
+            "description": null,
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": "String",
+                "kind": "SCALAR",
+                "ofType": null
+              }
+            },
+            "defaultValue": null
+          },
+          {
+            "name": "statement",
+            "description": "The exact statement shown to and confirmed by the admin.",
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": "String",
+                "kind": "SCALAR",
+                "ofType": null
+              }
+            },
+            "defaultValue": null
+          }
+        ],
+        "interfaces": null,
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "ENUM",
+        "name": "TakedownAcknowledgmentStatus",
+        "description": null,
+        "fields": null,
+        "inputFields": null,
+        "interfaces": null,
+        "enumValues": [
+          {
+            "name": "ACKNOWLEDGED",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "CLEARED",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "REQUIRED",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "possibleTypes": null
+      },
+      {
+        "kind": "ENUM",
+        "name": "TakedownNoticeKind",
+        "description": "Which complaint a takedown answered. OTHER keeps generic wording rather than asserting a legal basis Railway did not record.",
+        "fields": null,
+        "inputFields": null,
+        "interfaces": null,
+        "enumValues": [
+          {
+            "name": "DMCA",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "OTHER",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "TRADEMARK",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
