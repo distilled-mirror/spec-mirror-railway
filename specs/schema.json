@@ -929,6 +929,12 @@
         "interfaces": null,
         "enumValues": [
           {
+            "name": "ADMIN_SUDO_ENFORCE",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "AGENT_BOOTSTRAPS",
             "description": null,
             "isDeprecated": false,
@@ -1593,6 +1599,12 @@
         "enumValues": [
           {
             "name": "COPY_VOLUME_TO_ENVIRONMENT",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "LIVENESS_CHECKS",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
@@ -19410,6 +19422,57 @@
           }
         ],
         "interfaces": null,
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "OBJECT",
+        "name": "LoginSessionOrigin",
+        "description": "Where the CLI that started a login session connected from.",
+        "fields": [
+          {
+            "name": "ip",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "requestedAt",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "DateTime",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "sameNetwork",
+            "description": "Whether this request comes from the same IP as the CLI. False when the CLI's IP is unknown.",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": "Boolean",
+                "kind": "SCALAR",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [],
         "enumValues": null,
         "possibleTypes": null
       },
@@ -44149,6 +44212,33 @@
                 "kind": "OBJECT",
                 "ofType": null
               }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "loginSessionOrigin",
+            "description": "Where a waiting CLI login session was started. Null when the session does not exist or was already verified.",
+            "args": [
+              {
+                "name": "code",
+                "description": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "name": "String",
+                    "kind": "SCALAR",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null
+              }
+            ],
+            "type": {
+              "kind": "OBJECT",
+              "name": "LoginSessionOrigin",
+              "ofType": null
             },
             "isDeprecated": false,
             "deprecationReason": null
