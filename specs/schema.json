@@ -929,12 +929,6 @@
         "interfaces": null,
         "enumValues": [
           {
-            "name": "ADMIN_SUDO_ENFORCE",
-            "description": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "AGENT_BOOTSTRAPS",
             "description": null,
             "isDeprecated": false,
@@ -953,12 +947,6 @@
             "deprecationReason": null
           },
           {
-            "name": "AGENT_BYOK_CHATGPT",
-            "description": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "AGENT_BYOK_FIREWORKS",
             "description": null,
             "isDeprecated": false,
@@ -971,12 +959,6 @@
             "deprecationReason": null
           },
           {
-            "name": "AGENT_BYOK_OPENROUTER",
-            "description": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "AGENT_CLAUDE_CONNECT",
             "description": null,
             "isDeprecated": false,
@@ -984,12 +966,6 @@
           },
           {
             "name": "AGENT_CONNECTORS",
-            "description": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "AGENT_TASKS",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
@@ -1037,6 +1013,12 @@
             "deprecationReason": null
           },
           {
+            "name": "DATABASE_AGENT_TOOLS",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "HA_FOR_MONGO",
             "description": null,
             "isDeprecated": false,
@@ -1068,6 +1050,12 @@
           },
           {
             "name": "PRIORITY_BOARDING",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "RAILQL",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
@@ -1121,6 +1109,12 @@
         "enumValues": [
           {
             "name": "ACTIVITY_FEED_FILTERS_KILLSWITCH",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "AGENT_BYOK_KILLSWITCH",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
@@ -1421,6 +1415,18 @@
           },
           {
             "name": "SECRETS_SHADOW_COMPARE_SAMPLE",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "SECRET_SCANNING_EMAIL",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "SECRET_SCANNING_REVOKE",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
@@ -6820,6 +6826,16 @@
             "defaultValue": null
           },
           {
+            "name": "allowCreate",
+            "description": "false refuses, with code AGENT_CREATE_REQUIRED, a task that would start a new agent, so you can ask before one is billed. Nothing is created or charged. Defaults to true.",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Boolean",
+              "ofType": null
+            },
+            "defaultValue": null
+          },
+          {
             "name": "cloudAgentId",
             "description": "Explicit agent reuse. Omit all targets to create a fresh agent.",
             "type": {
@@ -8109,6 +8125,12 @@
           {
             "name": "AWAITING_INPUT",
             "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "CANCELLED",
+            "description": "Stopped by cloudAgentTaskCancel. Terminal, like FAILED, and its error says so.",
             "isDeprecated": false,
             "deprecationReason": null
           },
@@ -21584,7 +21606,7 @@
           },
           {
             "name": "cloudAgentTaskCancel",
-            "description": "Stop a task. Before its prompt is sent it never starts; after, only its own run is aborted. The task ends failed with \"The task was cancelled\". A finished task is left as is.",
+            "description": "Stop a task. Before its prompt is sent it never starts; after, only its own run is aborted. The task ends CANCELLED, with \"The task was cancelled\" as its error. A finished task is left as is.",
             "args": [
               {
                 "name": "taskId",
@@ -34141,6 +34163,12 @@
             "deprecationReason": null
           },
           {
+            "name": "AGENT_BYOK_KILLSWITCH",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "AGENT_CACHE_TOKEN_BILLING",
             "description": null,
             "isDeprecated": false,
@@ -34436,6 +34464,18 @@
           },
           {
             "name": "SECRETS_SHADOW_COMPARE_SAMPLE",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "SECRET_SCANNING_EMAIL",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "SECRET_SCANNING_REVOKE",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
