@@ -941,31 +941,13 @@
             "deprecationReason": null
           },
           {
-            "name": "AGENT_BYOK_ANTHROPIC",
-            "description": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "AGENT_BYOK_FIREWORKS",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
           },
           {
-            "name": "AGENT_BYOK_OPENAI",
-            "description": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "AGENT_CLAUDE_CONNECT",
-            "description": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "AGENT_CONNECTORS",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
@@ -1014,6 +996,12 @@
           },
           {
             "name": "DATABASE_AGENT_TOOLS",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "ENVIRONMENT_FORKS",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
