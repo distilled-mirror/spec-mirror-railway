@@ -1234,6 +1234,18 @@
             "deprecationReason": null
           },
           {
+            "name": "EMAIL_LOGIN_SELF_HOSTED",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "EMAIL_LOGIN_SELF_HOSTED_KILLSWITCH",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "ENVIRONMENT_PATCH_ARCHIVE_PRODUCE",
             "description": null,
             "isDeprecated": false,
@@ -14834,6 +14846,18 @@
             "type": {
               "kind": "OBJECT",
               "name": "Environment",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "sourceEnvironmentName",
+            "description": "Name of the environment this one was copied from. A project token can read this on its own environment. It does not grant access to the source environment.",
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
               "ofType": null
             },
             "isDeprecated": false,
@@ -34278,6 +34302,18 @@
           },
           {
             "name": "EMAIL_FORWARDING_KILLSWITCH",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "EMAIL_LOGIN_SELF_HOSTED",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "EMAIL_LOGIN_SELF_HOSTED_KILLSWITCH",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
