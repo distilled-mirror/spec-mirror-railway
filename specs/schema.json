@@ -947,12 +947,6 @@
             "deprecationReason": null
           },
           {
-            "name": "AGENT_CLAUDE_CONNECT",
-            "description": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "CHAT_SANDBOX",
             "description": null,
             "isDeprecated": false,
@@ -1522,13 +1516,13 @@
             "deprecationReason": null
           },
           {
-            "name": "VM_NEW_SERVICES_HOBBY_ROLLOUT",
+            "name": "VM_ROLLOUT_EVACUATE",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
           },
           {
-            "name": "VM_NEW_SERVICES_TRIAL_ROLLOUT",
+            "name": "VM_ROLLOUT_PAUSE",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
@@ -34595,13 +34589,13 @@
             "deprecationReason": null
           },
           {
-            "name": "VM_NEW_SERVICES_HOBBY_ROLLOUT",
+            "name": "VM_ROLLOUT_EVACUATE",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
           },
           {
-            "name": "VM_NEW_SERVICES_TRIAL_ROLLOUT",
+            "name": "VM_ROLLOUT_PAUSE",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
