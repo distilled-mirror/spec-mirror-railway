@@ -1055,12 +1055,6 @@
             "deprecationReason": null
           },
           {
-            "name": "USAGE_INSIGHTS",
-            "description": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "VERIFIERS",
             "description": null,
             "isDeprecated": false,
@@ -1108,7 +1102,19 @@
             "deprecationReason": null
           },
           {
+            "name": "AI_GATEWAY_AGENTS",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "ALERT_SUS_USERS_CRON_KILLSWITCH",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "AUTHZ_ENFORCE",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
@@ -1385,12 +1391,6 @@
           },
           {
             "name": "RELAY_SPEND_RESERVATION_KILLSWITCH",
-            "description": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "REMOVE_DEPLOYMENT_COMPACT",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
@@ -28174,7 +28174,7 @@
           },
           {
             "name": "trustedDomainRetriggerVerification",
-            "description": "Retrigger verification for a failed trusted domain",
+            "description": "Check the DNS record for a workspace email domain",
             "args": [
               {
                 "name": "id",
@@ -28201,7 +28201,7 @@
           },
           {
             "name": "trustedDomainUpdate",
-            "description": "Update the role of a trusted domain",
+            "description": "Update the automatic joining policy for a workspace email domain",
             "args": [
               {
                 "name": "input",
@@ -34193,7 +34193,19 @@
             "deprecationReason": null
           },
           {
+            "name": "AI_GATEWAY_AGENTS",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "ALERT_SUS_USERS_CRON_KILLSWITCH",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "AUTHZ_ENFORCE",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
@@ -34470,12 +34482,6 @@
           },
           {
             "name": "RELAY_SPEND_RESERVATION_KILLSWITCH",
-            "description": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "REMOVE_DEPLOYMENT_COMPACT",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
@@ -65573,6 +65579,22 @@
         "description": null,
         "fields": [
           {
+            "name": "autoJoinEnabled",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": "Boolean",
+                "kind": "SCALAR",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "domainName",
             "description": null,
             "args": [],
@@ -71821,6 +71843,16 @@
         "fields": null,
         "inputFields": [
           {
+            "name": "autoJoinEnabled",
+            "description": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "Boolean",
+              "ofType": null
+            },
+            "defaultValue": null
+          },
+          {
             "name": "id",
             "description": null,
             "type": {
@@ -71838,13 +71870,9 @@
             "name": "role",
             "description": null,
             "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "name": "String",
-                "kind": "SCALAR",
-                "ofType": null
-              }
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
             },
             "defaultValue": null
           }
