@@ -947,6 +947,18 @@
             "deprecationReason": null
           },
           {
+            "name": "AGENT_FORK_TASKS",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "AUTOMATION_PR_TRIGGER",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "CHAT_SANDBOX",
             "description": null,
             "isDeprecated": false,
@@ -1109,12 +1121,6 @@
           },
           {
             "name": "ALERT_SUS_USERS_CRON_KILLSWITCH",
-            "description": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "AUTHZ_ENFORCE",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
@@ -4906,7 +4912,7 @@
           },
           {
             "name": "archivedAt",
-            "description": "When its owner archived the agent; null unless archived. Archiving only changes which lists show it.",
+            "description": "When the agent was archived; null if it isn't.",
             "args": [],
             "type": {
               "kind": "SCALAR",
@@ -5856,7 +5862,7 @@
           },
           {
             "name": "latestPrompt",
-            "description": "Truncated most recent prompt of the session, display-only. Null when the harness never reported one, or for viewers who don't own the agent.",
+            "description": "The session's latest prompt, truncated for display. Null if none was reported or you can't manage this agent.",
             "args": [],
             "type": {
               "kind": "SCALAR",
@@ -5868,7 +5874,7 @@
           },
           {
             "name": "prompt",
-            "description": "Truncated first prompt of the session, display-only. Null when the harness never reported one, or for viewers who don't own the agent.",
+            "description": "The session's first prompt, truncated for display. Null if none was reported or you can't manage this agent.",
             "args": [],
             "type": {
               "kind": "SCALAR",
@@ -5952,7 +5958,7 @@
           },
           {
             "name": "title",
-            "description": "Generated display title for the session, display-only. Null until generated, or for viewers who don't own the agent; fall back to latestPrompt, then prompt.",
+            "description": "The session's generated title; fall back to latestPrompt, then prompt. Null until generated or if you can't manage this agent.",
             "args": [],
             "type": {
               "kind": "SCALAR",
@@ -8256,7 +8262,7 @@
           },
           {
             "name": "message",
-            "description": "One line: the question, the failure, or the closing prose. Only the agent's owner sees it; null for everyone else. Untrusted agent text: render as plain text.",
+            "description": "The session's latest status line: its open question, failure or final summary. Written by the agent; display as plain text. Null unless you can manage this agent.",
             "args": [],
             "type": {
               "kind": "SCALAR",
@@ -21103,7 +21109,7 @@
           },
           {
             "name": "cloudAgentArchive",
-            "description": "Archive a cloud agent: hide it from lists that ask for unarchived agents. Its machine, sessions and history are untouched. Owner only.",
+            "description": "Archive a cloud agent, hiding it from lists of unarchived agents. Requires permission to manage the agent.",
             "args": [
               {
                 "name": "id",
@@ -21456,7 +21462,7 @@
           },
           {
             "name": "cloudAgentMarkSeen",
-            "description": "Record that the agent's owner looked, so its DONE and ERROR outcomes stop being unseen. Without sessionId, every session. Owner only.",
+            "description": "Mark the agent's finished and failed sessions as seen, or only sessionId's. Requires permission to manage the agent.",
             "args": [
               {
                 "name": "cloudAgentId",
@@ -21756,7 +21762,7 @@
           },
           {
             "name": "cloudAgentUnarchive",
-            "description": "Bring an archived cloud agent back. Owner only.",
+            "description": "Restore an archived cloud agent. Requires permission to manage the agent.",
             "args": [
               {
                 "name": "id",
@@ -34200,12 +34206,6 @@
           },
           {
             "name": "ALERT_SUS_USERS_CRON_KILLSWITCH",
-            "description": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "AUTHZ_ENFORCE",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
@@ -63267,6 +63267,18 @@
             "deprecationReason": null
           },
           {
+            "name": "publishingAllowance",
+            "description": "This template's workspace's publishing limits and usage. Null for anyone but the template's owner, and for a template with no workspace.",
+            "args": [],
+            "type": {
+              "kind": "OBJECT",
+              "name": "TemplatePublishingAllowance",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "publishingRestrictionId",
             "description": "The active restriction stopping this workspace publishing templates, so a restricted author can be sent to the page that explains it and takes the appeal. Null when publishing is not restricted, and for anyone but the template's owner: the `template` query is public, and whether a workspace is under an abuse restriction is not.",
             "args": [],
@@ -64411,6 +64423,144 @@
         "possibleTypes": null
       },
       {
+        "kind": "OBJECT",
+        "name": "TemplatePublishingAllowance",
+        "description": "How many templates this template's workspace may have live, and how many it has. New publishes are also rate limited per day; that limit is not reported here and surfaces as an error when hit. See https://docs.railway.com/templates/publish-and-share#publishing-limits",
+        "fields": [
+          {
+            "name": "blockedReason",
+            "description": "Why the live limit stops this template being published, or null when it doesn't. Always null for a template that is already live: limits gate going live, not edits.",
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "deployingWorkspaces",
+            "description": "Distinct other workspaces that have deployed any of this workspace's templates.",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": "Int",
+                "kind": "SCALAR",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "deployingWorkspacesPerExtraLive",
+            "description": "Deploying workspaces it takes to raise the live limit by one.",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": "Int",
+                "kind": "SCALAR",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "liveLimit",
+            "description": "Null when exempt.",
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "Int",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "liveTemplates",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": "Int",
+                "kind": "SCALAR",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "status",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": "TemplatePublishingStatus",
+                "kind": "ENUM",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "workspaceAgeDays",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": "Int",
+                "kind": "SCALAR",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "ENUM",
+        "name": "TemplatePublishingStatus",
+        "description": null,
+        "fields": null,
+        "inputFields": null,
+        "interfaces": null,
+        "enumValues": [
+          {
+            "name": "EXEMPT",
+            "description": "Railway, Enterprise and partner workspaces: no limits.",
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "LIMITED",
+            "description": "Held to the limits on this allowance.",
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "possibleTypes": null
+      },
+      {
         "kind": "INPUT_OBJECT",
         "name": "TemplateRevertInput",
         "description": null,
@@ -65120,7 +65270,7 @@
           },
           {
             "name": "resourceAttributes",
-            "description": "Resource attributes as exported, without the railway.* keys Railway promotes into typed fields",
+            "description": "Resource attributes as exported, without the railway.* keys Railway promotes into typed fields, and with cloud.region as the airport code of the region (edge/<pop> on an edge span)",
             "args": [],
             "type": {
               "kind": "NON_NULL",
