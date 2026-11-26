@@ -929,12 +929,6 @@
         "interfaces": null,
         "enumValues": [
           {
-            "name": "AGENT_BOOTSTRAPS",
-            "description": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "AGENT_BYOK",
             "description": null,
             "isDeprecated": false,
@@ -948,12 +942,6 @@
           },
           {
             "name": "AGENT_FORK_TASKS",
-            "description": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "AUTOMATION_PR_TRIGGER",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
@@ -1096,6 +1084,12 @@
             "deprecationReason": null
           },
           {
+            "name": "AGENT_BOOTSTRAPS_KILLSWITCH",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "AGENT_BYOK_KILLSWITCH",
             "description": null,
             "isDeprecated": false,
@@ -1103,6 +1097,12 @@
           },
           {
             "name": "AGENT_CACHE_TOKEN_BILLING",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "AGENT_DASHBOARD_NEW_ACCOUNTS",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
@@ -1121,6 +1121,12 @@
           },
           {
             "name": "ALERT_SUS_USERS_CRON_KILLSWITCH",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "AUTOMATION_PR_TRIGGER_WEBHOOK",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
@@ -1597,6 +1603,12 @@
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
+          },
+          {
+            "name": "WEBSITES",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
           }
         ],
         "possibleTypes": null
@@ -2029,6 +2041,169 @@
           }
         ],
         "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "INPUT_OBJECT",
+        "name": "AgentDashboardFeedbackInput",
+        "description": null,
+        "fields": null,
+        "inputFields": [
+          {
+            "name": "cloudAgentId",
+            "description": "The agent the problem was in. Linked only if it is the caller's own.",
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "defaultValue": null
+          },
+          {
+            "name": "error",
+            "description": "The error the person was shown.",
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "defaultValue": null
+          },
+          {
+            "name": "failure",
+            "description": "What failed, as the dashboard said.",
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "defaultValue": null
+          },
+          {
+            "name": "kind",
+            "description": "problem: reported from something that failed, with what failed.",
+            "type": {
+              "kind": "ENUM",
+              "name": "AgentDashboardFeedbackKind",
+              "ofType": null
+            },
+            "defaultValue": null
+          },
+          {
+            "name": "message",
+            "description": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "defaultValue": null
+          },
+          {
+            "name": "path",
+            "description": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "defaultValue": null
+          },
+          {
+            "name": "replayUrl",
+            "description": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "defaultValue": null
+          },
+          {
+            "name": "runId",
+            "description": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "defaultValue": null
+          },
+          {
+            "name": "sentiment",
+            "description": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "AgentDashboardFeedbackSentiment",
+              "ofType": null
+            },
+            "defaultValue": null
+          },
+          {
+            "name": "userAgent",
+            "description": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "defaultValue": null
+          }
+        ],
+        "interfaces": null,
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "ENUM",
+        "name": "AgentDashboardFeedbackKind",
+        "description": null,
+        "fields": null,
+        "inputFields": null,
+        "interfaces": null,
+        "enumValues": [
+          {
+            "name": "feedback",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "problem",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "possibleTypes": null
+      },
+      {
+        "kind": "ENUM",
+        "name": "AgentDashboardFeedbackSentiment",
+        "description": null,
+        "fields": null,
+        "inputFields": null,
+        "interfaces": null,
+        "enumValues": [
+          {
+            "name": "negative",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "neutral",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "positive",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
         "possibleTypes": null
       },
       {
@@ -5030,6 +5205,18 @@
                 "kind": "SCALAR",
                 "ofType": null
               }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "previewDomain",
+            "description": "The agent machine's own public HTTP domain (port 8080), known whether or not the machine is up: the observed one, else derived from the machine's id as the orchestrator names it. A fork's is its own machine's, never the source's. Null without a machine.",
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
             },
             "isDeprecated": false,
             "deprecationReason": null
@@ -20182,6 +20369,41 @@
         "possibleTypes": null
       },
       {
+        "kind": "INPUT_OBJECT",
+        "name": "MonitorConfigInput",
+        "description": null,
+        "fields": null,
+        "inputFields": [
+          {
+            "name": "threshold",
+            "description": null,
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "MonitorThresholdConfigInput",
+              "ofType": null
+            },
+            "defaultValue": null
+          },
+          {
+            "name": "type",
+            "description": null,
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": "MonitorType",
+                "kind": "ENUM",
+                "ofType": null
+              }
+            },
+            "defaultValue": null
+          }
+        ],
+        "interfaces": null,
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
         "kind": "ENUM",
         "name": "MonitorStatus",
         "description": null,
@@ -20296,6 +20518,62 @@
         "inputFields": null,
         "interfaces": [],
         "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "INPUT_OBJECT",
+        "name": "MonitorThresholdConfigInput",
+        "description": null,
+        "fields": null,
+        "inputFields": [
+          {
+            "name": "condition",
+            "description": null,
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": "MonitorThresholdCondition",
+                "kind": "ENUM",
+                "ofType": null
+              }
+            },
+            "defaultValue": null
+          },
+          {
+            "name": "threshold",
+            "description": null,
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": "Float",
+                "kind": "SCALAR",
+                "ofType": null
+              }
+            },
+            "defaultValue": null
+          }
+        ],
+        "interfaces": null,
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "ENUM",
+        "name": "MonitorType",
+        "description": null,
+        "fields": null,
+        "inputFields": null,
+        "interfaces": null,
+        "enumValues": [
+          {
+            "name": "threshold",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
         "possibleTypes": null
       },
       {
@@ -20528,6 +20806,37 @@
               "ofType": {
                 "name": "AccessGroup",
                 "kind": "OBJECT",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "agentDashboardFeedbackCreate",
+            "description": "Send feedback about the agent dashboard to the Railway team. True once delivered.",
+            "args": [
+              {
+                "name": "input",
+                "description": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "name": "AgentDashboardFeedbackInput",
+                    "kind": "INPUT_OBJECT",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null
+              }
+            ],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": "Boolean",
+                "kind": "SCALAR",
                 "ofType": null
               }
             },
@@ -21366,7 +21675,7 @@
           },
           {
             "name": "cloudAgentFork",
-            "description": "Duplicate a running cloud agent.",
+            "description": "Duplicate a running cloud agent. With sessionId, the new agent keeps that chat and its history; without it, it starts with no chats.",
             "args": [
               {
                 "name": "id",
@@ -21385,6 +21694,16 @@
               {
                 "name": "name",
                 "description": null,
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                },
+                "defaultValue": null
+              },
+              {
+                "name": "sessionId",
+                "description": "The harness's session id of the chat to carry over.",
                 "type": {
                   "kind": "SCALAR",
                   "name": "String",
@@ -22800,6 +23119,22 @@
             "deprecationReason": null
           },
           {
+            "name": "emailChangeCancel",
+            "description": "Cancel the authenticated user's pending email change, so its link stops working.",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": "Boolean",
+                "kind": "SCALAR",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "emailChangeConfirm",
             "description": "Change the User's account email if there is a valid change email request.",
             "args": [
@@ -22832,7 +23167,7 @@
           },
           {
             "name": "emailChangeInitiate",
-            "description": "Initiate an email change request for a user",
+            "description": "Email a confirmation link to a new address for the authenticated user. Replaces any pending email change, so earlier links stop working.",
             "args": [
               {
                 "name": "newEmail",
@@ -24253,6 +24588,127 @@
             "deprecationReason": null
           },
           {
+            "name": "observabilityDashboardMonitorCreate",
+            "description": "Create an observability monitor for a dashboard item",
+            "args": [
+              {
+                "name": "dashboardItemId",
+                "description": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "name": "String",
+                    "kind": "SCALAR",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null
+              },
+              {
+                "name": "input",
+                "description": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "name": "ObservabilityDashboardMonitorCreateInput",
+                    "kind": "INPUT_OBJECT",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null
+              }
+            ],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": "Boolean",
+                "kind": "SCALAR",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "observabilityDashboardMonitorRemove",
+            "description": "Remove an observability monitor from a dashboard item",
+            "args": [
+              {
+                "name": "id",
+                "description": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "name": "String",
+                    "kind": "SCALAR",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null
+              }
+            ],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": "Boolean",
+                "kind": "SCALAR",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "observabilityDashboardMonitorUpdate",
+            "description": "Update an observability monitor for a dashboard item",
+            "args": [
+              {
+                "name": "id",
+                "description": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "name": "String",
+                    "kind": "SCALAR",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null
+              },
+              {
+                "name": "input",
+                "description": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "name": "ObservabilityDashboardMonitorUpdateInput",
+                    "kind": "INPUT_OBJECT",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null
+              }
+            ],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": "Boolean",
+                "kind": "SCALAR",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "observabilityDashboardReset",
             "description": "Reset an observability dashboard to default dashboard items",
             "args": [
@@ -24320,6 +24776,16 @@
                       }
                     }
                   }
+                },
+                "defaultValue": null
+              },
+              {
+                "name": "revision",
+                "description": "The dashboard's revision when it was read. Given, a save based on an older one is refused with DASHBOARD_CHANGED.",
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
                 },
                 "defaultValue": null
               }
@@ -26120,8 +26586,8 @@
                 "ofType": null
               }
             },
-            "isDeprecated": false,
-            "deprecationReason": null
+            "isDeprecated": true,
+            "deprecationReason": "Use sandbox.exec() in the Railway SDK or `railway sandbox exec` in the CLI."
           },
           {
             "name": "sandboxHeartbeat",
@@ -31923,6 +32389,22 @@
             },
             "isDeprecated": false,
             "deprecationReason": null
+          },
+          {
+            "name": "revision",
+            "description": "Changes with every write to the dashboard. Pass it to observabilityDashboardUpdate, which refuses a save based on an older one.",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": "String",
+                "kind": "SCALAR",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
           }
         ],
         "inputFields": null,
@@ -32271,6 +32753,18 @@
             "deprecationReason": null
           },
           {
+            "name": "query",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "resourceIds",
             "description": null,
             "args": [],
@@ -32286,6 +32780,18 @@
                   "ofType": null
                 }
               }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "visualization",
+            "description": "How the panel draws its query. Absent means the default for the query's type.",
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
             },
             "isDeprecated": false,
             "deprecationReason": null
@@ -32359,6 +32865,16 @@
             "defaultValue": null
           },
           {
+            "name": "query",
+            "description": "The panel's RailQL query. Left out, the panel keeps its stored query and visualization.",
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "defaultValue": null
+          },
+          {
             "name": "resourceIds",
             "description": null,
             "type": {
@@ -32373,6 +32889,16 @@
                   "ofType": null
                 }
               }
+            },
+            "defaultValue": null
+          },
+          {
+            "name": "visualization",
+            "description": "How the panel draws its query, one the query's result allows. Absent means the default for the query's type.",
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
             },
             "defaultValue": null
           }
@@ -32562,6 +33088,12 @@
             "deprecationReason": null
           },
           {
+            "name": "RAILQL_ITEM",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "SERVICE_LOGS_ITEM",
             "description": null,
             "isDeprecated": false,
@@ -32723,6 +33255,56 @@
             "ofType": null
           }
         ]
+      },
+      {
+        "kind": "INPUT_OBJECT",
+        "name": "ObservabilityDashboardMonitorCreateInput",
+        "description": null,
+        "fields": null,
+        "inputFields": [
+          {
+            "name": "config",
+            "description": null,
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": "MonitorConfigInput",
+                "kind": "INPUT_OBJECT",
+                "ofType": null
+              }
+            },
+            "defaultValue": null
+          }
+        ],
+        "interfaces": null,
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "INPUT_OBJECT",
+        "name": "ObservabilityDashboardMonitorUpdateInput",
+        "description": null,
+        "fields": null,
+        "inputFields": [
+          {
+            "name": "config",
+            "description": null,
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": "MonitorConfigInput",
+                "kind": "INPUT_OBJECT",
+                "ofType": null
+              }
+            },
+            "defaultValue": null
+          }
+        ],
+        "interfaces": null,
+        "enumValues": null,
+        "possibleTypes": null
       },
       {
         "kind": "INPUT_OBJECT",
@@ -33281,6 +33863,65 @@
               "name": null,
               "ofType": {
                 "name": "String",
+                "kind": "SCALAR",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "OBJECT",
+        "name": "PendingEmailChange",
+        "description": "An email change the authenticated user requested and has not confirmed yet.",
+        "fields": [
+          {
+            "name": "email",
+            "description": "The address the change is to.",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": "String",
+                "kind": "SCALAR",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "expiresAt",
+            "description": "When the confirmation link stops working.",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": "DateTime",
+                "kind": "SCALAR",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "requestedAt",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": "DateTime",
                 "kind": "SCALAR",
                 "ofType": null
               }
@@ -34181,6 +34822,12 @@
             "deprecationReason": null
           },
           {
+            "name": "AGENT_BOOTSTRAPS_KILLSWITCH",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "AGENT_BYOK_KILLSWITCH",
             "description": null,
             "isDeprecated": false,
@@ -34188,6 +34835,12 @@
           },
           {
             "name": "AGENT_CACHE_TOKEN_BILLING",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "AGENT_DASHBOARD_NEW_ACCOUNTS",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
@@ -34206,6 +34859,12 @@
           },
           {
             "name": "ALERT_SUS_USERS_CRON_KILLSWITCH",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "AUTOMATION_PR_TRIGGER_WEBHOOK",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
@@ -45798,6 +46457,18 @@
             "deprecationReason": null
           },
           {
+            "name": "pendingEmailChange",
+            "description": "The authenticated user's unconfirmed email change, if there is one.",
+            "args": [],
+            "type": {
+              "kind": "OBJECT",
+              "name": "PendingEmailChange",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "pitrHaClusterReplicationHealth",
             "description": "Live replication health for an HA database cluster (Postgres HA, MySQL HA). Use it to gate the Enable/Disable PITR buttons so a rollout can't start while a member is too far behind to rejoin. Returns null when the service isn't an HA root.",
             "args": [
@@ -56138,6 +56809,18 @@
             "deprecationReason": null
           },
           {
+            "name": "kind",
+            "description": "Null for an ordinary service.",
+            "args": [],
+            "type": {
+              "kind": "ENUM",
+              "name": "ServiceKind",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "name",
             "description": null,
             "args": [],
@@ -58356,6 +59039,23 @@
         ],
         "interfaces": null,
         "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "ENUM",
+        "name": "ServiceKind",
+        "description": "What a service is, when it isn't an ordinary service. A Website's builds upload a release that the edge serves.",
+        "fields": null,
+        "inputFields": null,
+        "interfaces": null,
+        "enumValues": [
+          {
+            "name": "WEBSITE",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
         "possibleTypes": null
       },
       {
