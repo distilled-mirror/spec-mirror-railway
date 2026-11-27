@@ -977,6 +977,12 @@
             "deprecationReason": null
           },
           {
+            "name": "CLOUD_AGENT_ROOTFS_SIZE",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "CONNECTOR_TUNNELS",
             "description": null,
             "isDeprecated": false,
@@ -996,12 +1002,6 @@
           },
           {
             "name": "HA_FOR_MONGO",
-            "description": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "IN_DASHBOARD_SUPPORT",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
@@ -1265,12 +1265,6 @@
           },
           {
             "name": "ENVIRONMENT_PATCH_ARCHIVE_READ_SIMULATE",
-            "description": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "IN_DASHBOARD_SUPPORT",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
@@ -7059,6 +7053,16 @@
             "defaultValue": null
           },
           {
+            "name": "dashboardHandoff",
+            "description": "For chat clients: a prompt that starts a new conversation and asks for code to be written goes to the agent dashboard as a new run (its own build agent on the service's repository) instead, and the handle carries dashboardRunUrl. Questions and operations stay here. Needs the agent dashboard turned on; ignored for continued conversations and with outputSchema, webhookUrl, idempotencyKey or allowCreate false.",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Boolean",
+              "ofType": null
+            },
+            "defaultValue": null
+          },
+          {
             "name": "environmentId",
             "description": null,
             "type": {
@@ -7280,6 +7284,18 @@
                 "kind": "SCALAR",
                 "ofType": null
               }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "dashboardRunUrl",
+            "description": "Set when dashboardHandoff moved the prompt to the agent dashboard: the task is a new run there, not a turn on the agent asked for, and this is its link. Follow it there; its questions and approvals wait on the dashboard.",
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
             },
             "isDeprecated": false,
             "deprecationReason": null
@@ -27594,6 +27610,37 @@
             "deprecationReason": null
           },
           {
+            "name": "serviceKindUpdate",
+            "description": "Makes an ordinary service a Website (kind WEBSITE) and redeploys it in every environment where it has a deployment. A Website can't be made an ordinary service (kind null) yet. Returns false when the service already has that kind.",
+            "args": [
+              {
+                "name": "input",
+                "description": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "name": "ServiceKindUpdateInput",
+                    "kind": "INPUT_OBJECT",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null
+              }
+            ],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": "Boolean",
+                "kind": "SCALAR",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "serviceRemoveUpstreamUrl",
             "description": "Remove the upstream URL from all service instances for this service",
             "args": [
@@ -35003,12 +35050,6 @@
           },
           {
             "name": "ENVIRONMENT_PATCH_ARCHIVE_READ_SIMULATE",
-            "description": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "IN_DASHBOARD_SUPPORT",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
@@ -57239,6 +57280,16 @@
             "defaultValue": null
           },
           {
+            "name": "kind",
+            "description": "Creates a Website when WEBSITE. Null for an ordinary service.",
+            "type": {
+              "kind": "ENUM",
+              "name": "ServiceKind",
+              "ofType": null
+            },
+            "defaultValue": null
+          },
+          {
             "name": "name",
             "description": null,
             "type": {
@@ -58090,6 +58141,22 @@
             "deprecationReason": null
           },
           {
+            "name": "hideUnhealthyReplicas",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": "Boolean",
+                "kind": "SCALAR",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "id",
             "description": null,
             "args": [],
@@ -58841,6 +58908,16 @@
             "defaultValue": null
           },
           {
+            "name": "hideUnhealthyReplicas",
+            "description": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "Boolean",
+              "ofType": null
+            },
+            "defaultValue": null
+          },
+          {
             "name": "ipv6EgressEnabled",
             "description": null,
             "type": {
@@ -59056,6 +59133,41 @@
             "deprecationReason": null
           }
         ],
+        "possibleTypes": null
+      },
+      {
+        "kind": "INPUT_OBJECT",
+        "name": "ServiceKindUpdateInput",
+        "description": null,
+        "fields": null,
+        "inputFields": [
+          {
+            "name": "kind",
+            "description": "WEBSITE for a Website. Null for an ordinary service.",
+            "type": {
+              "kind": "ENUM",
+              "name": "ServiceKind",
+              "ofType": null
+            },
+            "defaultValue": null
+          },
+          {
+            "name": "serviceId",
+            "description": null,
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "name": "String",
+                "kind": "SCALAR",
+                "ofType": null
+              }
+            },
+            "defaultValue": null
+          }
+        ],
+        "interfaces": null,
+        "enumValues": null,
         "possibleTypes": null
       },
       {
